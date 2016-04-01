@@ -755,6 +755,7 @@ if (empty($langfile)) {
                         '" . $table_prefix . "track_links', '" . $table_prefix . "upload',
                         '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted',
                         '$alert_sub','1')";
+                        
             if($cnx->Sql($sql)){
                 echo '<h4 class="alert_success">' . tr("INSTALL_SAVE_CONFIG") . ' ' .tr("DONE").'</h4>';
             }else{
