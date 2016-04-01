@@ -44,6 +44,7 @@ $msg_id  = (!empty($_GET['msg_id'])) ? (($_GET['msg_id'])+0) : '';
 $sn      = (!empty($_GET['sn'])) ? (($_GET['sn'])+0) : '';
 $error   = (!empty($_GET['error'])) ? $_GET['error'] : '';
 $encode  = (!empty($_GET['encode'])&&$_GET['encode']=='base64')  ? 'base64' : '8bit';
+$domains_not_to_test = array('yahoo','ymail','rocketmail');
 switch ($step) {
     case "send":
         $tts = 0;
@@ -55,6 +56,13 @@ switch ($step) {
         $daylog = @fopen('logs/daylog-' . date("Y-m-d") . '.txt', 'a+');
         $limit            = $row_config_globale['sending_limit'];
         $mail             = new PHPMailer();
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+            )
+        );
         $mail->CharSet    = $row_config_globale['charset'];
         $mail->ContentType= "text/html";
         $mail->Encoding   = $encode;
@@ -106,95 +114,134 @@ switch ($step) {
             $mail->DKIM_identity   = $DKIM_identity;
         }
         $to_send = count($addr);
+        require_once("include/lib/class.valideMail.php");
         for ($i = 0; $i < $to_send; $i++) {
             $dest_adresse = trim($addr[$i]['email']);
-            include("include/lib/switch_smtp.php");
-            $time_info = '';
-            $begintimesend = microtime(true);
-            $unsubLink = "";
-            $mail->ClearAllRecipients();
-            $mail->ClearCustomHeaders();
-            $mail->AddAddress($dest_adresse);
-            $mail->XMailer = ' ';
-            $body = "";
-            if ( $row_config_globale['active_tracking'] == '1' ) {
-                $trac = "<img style='border:0' src='" . $row_config_globale['base_url'] . $row_config_globale['path'] . "trc.php?i=" .$msg_id. "&h=" 
-                      . $addr[$i]['hash'] . "' width='1'  height='1 alt='".$list_id."' />";
-            } else {
-                $trac = "";
-            }
-            if ( $format == "html" ){
-                $body .= "<html><head></head><body>";
-                $body .= "<div align='center' style='font-size:10pt;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>";
-                $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url']
-                      .$row_config_globale['path']."online.php?i=$msg_id&list_id=$list_id&email_addr="
-                      .$addr[$i]['email']."&h=".$addr[$i]['hash']."'>")."<br />";
-                $body .= tr("ADD_ADRESS_BOOK", $newsletter['from_addr'])."<br />";
-                $body .= "<hr noshade='' color='#D4D4D4' width='90%' size='1'></div>";
-                $new_url = 'href="' . $row_config_globale['base_url'] . $row_config_globale['path'] .'r.php?m='.$msg_id.'&h='.$addr[$i]['hash'].'&l='.$list_id.'&r=';
-                $message = preg_replace_callback(
-                    '/href="(http:\/\/)([^"]+)"/',
-                    function($matches) {
-                        global $new_url;
-                        return $new_url . (urlencode(@$matches[1] . $matches[2])) . '"';
-                    },$AltMessage);
-                $unsubLink = "<br /><div align='center' style='padding-top:10px;font-size:10pt;font-family:arial,helvetica,sans-serif;padding-bottom:10px;color:#878e83;'>
-                           <hr noshade='' color='#D4D4D4' width='90%' size='1'>"
-                           . tr("UNSUBSCRIBE_LINK", "<a href='".$row_config_globale['base_url'] . $row_config_globale['path']
-                           . "subscription.php?i=$msg_id&list_id=$list_id&op=leave&email_addr=" . $addr[$i]['email'] 
-                           . "&h=" . $addr[$i]['hash']."' style='' target='_blank'>")
-                           . "<br /><a href='http://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
-            } else {
-                $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url'].$row_config_globale['path']
-                      ."online.php?i=$msg_id&list_id=$list_id&email_addr=".$addr[$i]['email']."&h=".$addr[$i]['hash']."'>")."<br />";
-                $body .= tr("ADD_ADRESS_BOOK", $newsletter['from_addr'])."<br />";
-                $unsubLink = $row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?i=" .$msg_id
-                           . "&list_id=$list_id&op=leave&email_addr=" . urlencode($addr[$i]['email'])."&h=" . $addr[$i]['hash'];
-            }
-            $AltBody = new \Html2Text\Html2Text($body.$AltMessage.$unsubLink);
-            $mail->AltBody = quoted_printable_encode($AltBody->getText());
-            $subject = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $subject : iconv("UTF-8", $row_config_globale['charset'], $subject));
-            $body .= $message . $unsubLink . $trac ;
-            $mail->Subject = $subject;
-            $mail->Body    = $body;
-            $mail->addCustomHeader("List-Unsubscribe",'<'. $row_config_globale['base_url'] . $row_config_globale['path'] 
-                  . 'subscription.php?i='.$msg_id.'&list_id='.$list_id.'&op=leave&email_addr=' . $addr[$i]['email'] . '&h=' . $addr[$i]['hash'] . '>');
-            @set_time_limit(300);
-            $ms_err_info = '';
-            if (!$mail->Send()) {
-                $cnx->query("UPDATE ".$row_config_globale['table_send']." SET error=error+1 WHERE `id_mail`='".$msg_id."' AND `id_list`='".$list_id."'");
-                $ms_err_info = $mail->ErrorInfo;
-                $cnx->query("UPDATE ".$row_config_globale['table_email']." 
-                                SET error='Y',long_desc='".$cnx->CleanInput($ms_err_info)."',campaign_id='".$msg_id."' 
-                            WHERE email='".$addr[$i]['email']."' 
-                                AND list_id='".$list_id."'");
-                $daylogmsg=date("Y-m-d H:i:s") . " : envoi à ".$addr[$i]['email']." en erreur $ms_err_info\n";
+            preg_match('/@((([^.]+)\.)+)([a-zA-Z]{3,}|[a-zA-Z.]{5,})/',$addr[$i]['email'],$arraytosend);
+            $CONTINUE = false;
+            if(!in_array($arraytosend[3],$domains_not_to_test)) {
+                $SMTP_Validator = new SMTP_validateEmail();
+                $SMTP_Validator->debug = false;
+                $daylogmsg=date("Y-m-d H:i:s") . " : test SMTP pour ".$addr[$i]['email']."\n";
                 fwrite($daylog, $daylogmsg, strlen($daylogmsg));
+                $results = $SMTP_Validator->validate(array($addr[$i]['email']), $newsletter['from_addr']);
+                if($results['code']==250) {
+                    $CONTINUE = true;
+                } else {
+                    $cnx->query("UPDATE ".$row_config_globale['table_send']." 
+                                    SET error=error+1 
+                                WHERE `id_mail`='".$msg_id."' 
+                                    AND `id_list`='".$list_id."'");
+                    $ms_err_info = $mail->ErrorInfo;
+                    $cnx->query("UPDATE ".$row_config_globale['table_email']." 
+                                    SET error='Y',long_desc='".$cnx->CleanInput(trim($results['reply']))."',campaign_id='".$msg_id."' 
+                                WHERE email='".$dest_adresse."' 
+                                    AND list_id='".$list_id."'");
+                    $daylogmsg=date("Y-m-d H:i:s") . " : connexion SMTP en erreur pour ".$addr[$i]['email'].", message retour : ".trim($results['reply'])."\n";
+                    fwrite($daylog, $daylogmsg, strlen($daylogmsg));
+                    $cnx->query("UPDATE ".$row_config_globale['table_send_suivi']." 
+                                SET nb_send=nb_send+1,last_id_send=".$addr[$i]['id']." 
+                                    WHERE `msg_id`='".$msg_id."' AND `list_id`='".$list_id."'");
+                    $endtimesend = microtime(true);
+                    $daylogmsg=date("Y-m-d H:i:s") . " : envoi à ".$addr[$i]['email']." KO, connexion SMTP en erreur\n";
+                    fwrite($daylog,  $daylogmsg, strlen($daylogmsg));
+                    $last_id_send = $addr[$i]['id'];
+                }
             } else {
-                $cnx->query("UPDATE ".$row_config_globale['table_email']." 
-                                SET campaign_id='".$msg_id."' 
-                            WHERE email='".$addr[$i]['email']."' 
-                                AND list_id='".$list_id."'");
-                $cnx->query("UPDATE ".$row_config_globale['table_send']." 
-                                SET cpt=cpt+1 
-                            WHERE `id_mail`='".$msg_id."' 
-                                AND `id_list`='".$list_id."'");
-                $ms_err_info = 'OK';
+                $CONTINUE = true;
+            }
+            if ($CONTINUE) {
+                include("include/lib/switch_smtp.php");
+                $time_info = '';
+                $begintimesend = microtime(true);
+                $unsubLink = "";
+                $mail->ClearAllRecipients();
+                $mail->ClearCustomHeaders();
+                $mail->AddAddress($dest_adresse);
+                $mail->XMailer = ' ';
+                $body = "";
+                if ( $row_config_globale['active_tracking'] == '1' ) {
+                    $trac = "<img style='border:0' src='" . $row_config_globale['base_url'] . $row_config_globale['path'] . "trc.php?i=" .$msg_id. "&h=" 
+                          . $addr[$i]['hash'] . "' width='1'  height='1 alt='".$list_id."' />";
+                } else {
+                    $trac = "";
+                }
+                if ( $format == "html" ){
+                    $body .= "<html><head></head><body>";
+                    $body .= "<div align='center' style='font-size:10pt;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>";
+                    $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url']
+                          .$row_config_globale['path']."online.php?i=$msg_id&list_id=$list_id&email_addr="
+                          .$addr[$i]['email']."&h=".$addr[$i]['hash']."'>")."<br />";
+                    $body .= tr("ADD_ADRESS_BOOK", $newsletter['from_addr'])."<br />";
+                    $body .= "<hr noshade='' color='#D4D4D4' width='90%' size='1'></div>";
+                    $new_url = 'href="' . $row_config_globale['base_url'] . $row_config_globale['path'] .'r.php?m='.$msg_id.'&h='.$addr[$i]['hash'].'&l='.$list_id.'&r=';
+                    $message = preg_replace_callback(
+                        '/href="(http:\/\/)([^"]+)"/',
+                        function($matches) {
+                            global $new_url;
+                            return $new_url . (urlencode(@$matches[1] . $matches[2])) . '"';
+                        },$AltMessage);
+                    $unsubLink = "<br /><div align='center' style='padding-top:10px;font-size:10pt;font-family:arial,helvetica,sans-serif;padding-bottom:10px;color:#878e83;'>
+                               <hr noshade='' color='#D4D4D4' width='90%' size='1'>"
+                               . tr("UNSUBSCRIBE_LINK", "<a href='".$row_config_globale['base_url'] . $row_config_globale['path']
+                               . "subscription.php?i=$msg_id&list_id=$list_id&op=leave&email_addr=" . $addr[$i]['email'] 
+                               . "&h=" . $addr[$i]['hash']."' style='' target='_blank'>")
+                               . "<br /><a href='http://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
+                } else {
+                    $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url'].$row_config_globale['path']
+                          ."online.php?i=$msg_id&list_id=$list_id&email_addr=".$addr[$i]['email']."&h=".$addr[$i]['hash']."'>")."<br />";
+                    $body .= tr("ADD_ADRESS_BOOK", $newsletter['from_addr'])."<br />";
+                    $unsubLink = $row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?i=" .$msg_id
+                               . "&list_id=$list_id&op=leave&email_addr=" . urlencode($addr[$i]['email'])."&h=" . $addr[$i]['hash'];
+                }
+                $AltBody = new \Html2Text\Html2Text($body.$AltMessage.$unsubLink);
+                $mail->AltBody = quoted_printable_encode($AltBody->getText());
+                $subject = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $subject : iconv("UTF-8", $row_config_globale['charset'], $subject));
+                $body .= $message . $unsubLink . $trac ;
+                $mail->Subject = $subject;
+                $mail->Body    = $body;
+                $mail->addCustomHeader("List-Unsubscribe",'<'. $row_config_globale['base_url'] . $row_config_globale['path'] 
+                      . 'subscription.php?i='.$msg_id.'&list_id='.$list_id.'&op=leave&email_addr=' . $addr[$i]['email'] . '&h=' . $addr[$i]['hash'] . '>');
+                @set_time_limit(300);
+                $ms_err_info = '';
+                if (!$mail->Send()) {
+                    $cnx->query("UPDATE ".$row_config_globale['table_send']." 
+                                    SET error=error+1 
+                                WHERE `id_mail`='".$msg_id."' 
+                                    AND `id_list`='".$list_id."'");
+                    $ms_err_info = $mail->ErrorInfo;
+                    $cnx->query("UPDATE ".$row_config_globale['table_email']." 
+                                    SET error='Y',long_desc='".$cnx->CleanInput($ms_err_info)."',campaign_id='".$msg_id."' 
+                                WHERE email='".$addr[$i]['email']."' 
+                                    AND list_id='".$list_id."'");
+                    $daylogmsg=date("Y-m-d H:i:s") . " : envoi à ".$addr[$i]['email']." en erreur $ms_err_info\n";
+                    fwrite($daylog, $daylogmsg, strlen($daylogmsg));
+                } else {
+                    $cnx->query("UPDATE ".$row_config_globale['table_email']." 
+                                    SET campaign_id='".$msg_id."' 
+                                WHERE email='".$addr[$i]['email']."' 
+                                    AND list_id='".$list_id."'");
+                    $cnx->query("UPDATE ".$row_config_globale['table_send']." 
+                                    SET cpt=cpt+1 
+                                WHERE `id_mail`='".$msg_id."' 
+                                    AND `id_list`='".$list_id."'");
+                    $ms_err_info = 'OK';
+                    $daylogmsg=date("Y-m-d H:i:s") . " : envoi à ".$addr[$i]['email']." OK\n";
+                    fwrite($daylog, $daylogmsg, strlen($daylogmsg));
+                }
+                $cnx->query("UPDATE ".$row_config_globale['table_send_suivi']." 
+                            SET nb_send=nb_send+1,last_id_send=".$addr[$i]['id']." 
+                                WHERE `msg_id`='".$msg_id."' AND `list_id`='".$list_id."'");
+                $endtimesend = microtime(true);
+                $time_info = substr(($endtimesend-$begintimesend),0,5);
+                $errstr = date("Y-m-d H:i:s"). "\tID : " .$addr[$i]['id'] . "\t" . $time_info . "\t\t " .$ms_err_info. " \t" . $addr[$i]['email'] . "\r\n";
+                if (!$dontlog){
+                    fwrite($handler, $errstr, strlen($errstr));
+                }
                 $daylogmsg=date("Y-m-d H:i:s") . " : envoi à ".$addr[$i]['email']." OK\n";
-                fwrite($daylog, $daylogmsg, strlen($daylogmsg));
+                fwrite($daylog,  $errstr, strlen($errstr));
+                $last_id_send = $addr[$i]['id'];
             }
-            $cnx->query("UPDATE ".$row_config_globale['table_send_suivi']." 
-                        SET nb_send=nb_send+1,last_id_send=".$addr[$i]['id']." 
-                            WHERE `msg_id`='".$msg_id."' AND `list_id`='".$list_id."'");
-            $endtimesend = microtime(true);
-            $time_info = substr(($endtimesend-$begintimesend),0,5);
-            $errstr = $addr[$i]['id'] . "\t" . date("H:i:s") . "\t " . $time_info . "\t\t " .$ms_err_info. " \t" . $addr[$i]['email'] . "\r\n";
-            if (!$dontlog){
-                fwrite($handler, $errstr, strlen($errstr));
-            }
-            $daylogmsg=date("Y-m-d H:i:s") . " : envoi à ".$addr[$i]['email']." OK\n";
-            fwrite($daylog,  $errstr, strlen($errstr));
-            $last_id_send = $addr[$i]['id'];
         }
         $end = microtime(true);
         $tts = substr(($end - $start),0,5);
@@ -218,7 +265,7 @@ switch ($step) {
                                 AND msg_id='".$msg_id."'");
         } else {
             $errstr = "------------------------------------------------------------\r\n";
-            $errstr .= "Finished at " . date("H:i:s") . "\r\n";
+            $errstr .= "Finished at " . date("Y-m-d H:i:s"). "\r\n";
             $errstr .= "============================================================\r\n";
             if (!$dontlog){
                 fwrite($handler, $errstr, strlen($errstr));
@@ -287,7 +334,7 @@ switch ($step) {
         }
         $errstr .= "============================================================\r\n";
         $errstr .= date("d M Y") . "\r\n";
-        $errstr .= "Started at " . date("H:i:s") . "\r\n";
+        $errstr .= "Started at " . date("Y-m-d H:i:s"). "\r\n";
         $errstr .= "N° \t Date \t\t Time \t\t Status \t\t Recipient  \r\n";
         $errstr .= "------------------------------------------------------------\r\n";
         if (!$dontlog){

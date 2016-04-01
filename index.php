@@ -130,7 +130,7 @@ if($page=='listes'){
         break;
         case 'duplicate':
             $newsletter_modele = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
-            $new_id=createNewsletter($cnx,$row_config_globale['table_listsconfig'],tr("NEWSLETTER_NEW_LETTER"),$newsletter_modele['from'],
+            $new_id=createNewsletter($cnx,$row_config_globale['table_listsconfig'],tr("NEWSLETTER_NEW_LETTER"),$newsletter_modele['from_addr'],
                                   $newsletter_modele['from_name'],$newsletter_modele['subject'],$newsletter_modele['header'],$newsletter_modele['footer'],
                                   $newsletter_modele['subscription_subject'],$newsletter_modele['subscription_body'],$newsletter_modele['welcome_subject'],
                                   $newsletter_modele['welcome_body'],$newsletter_modele['quit_subject'],$newsletter_modele['quit_body'],$newsletter_modele['preview_addr']);
@@ -144,7 +144,7 @@ if($page=='listes'){
             if(!empty($_POST['mix_list_id'])&&is_array($_POST['mix_list_id'])){
                 $list_id_to_duplicate = $_POST['mix_list_id'][0];
                 $newsletter_modele = getConfig($cnx, $list_id_to_duplicate, $row_config_globale['table_listsconfig']);
-                $new_id=createNewsletter($cnx,$row_config_globale['table_listsconfig'],tr("NEWSLETTER_NEW_LETTER"),$newsletter_modele['from'],
+                $new_id=createNewsletter($cnx,$row_config_globale['table_listsconfig'],tr("NEWSLETTER_NEW_LETTER"),$newsletter_modele['from_addr'],
                                       $newsletter_modele['from_name'],$newsletter_modele['subject'],$newsletter_modele['header'],$newsletter_modele['footer'],
                                       $newsletter_modele['subscription_subject'],$newsletter_modele['subscription_body'],$newsletter_modele['welcome_subject'],
                                       $newsletter_modele['welcome_body'],$newsletter_modele['quit_subject'],$newsletter_modele['quit_body'],$newsletter_modele['preview_addr']);

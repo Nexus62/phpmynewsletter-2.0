@@ -600,6 +600,10 @@ $lang_array=array(
     "F_SENT_ON"=>"Envoyé le",
     "F_BROWSER_IFRAME"=>"Oups ! Votre navigateur ne supporte pas les iframes !", // Oups ! Your browser does not support iframes !.
     "F_USE_THIS_AS_NEW_TEMPLATE_WITH_LIST"=>"Utiliser ce message comme modèle pour nouvelle rédaction avec la liste ",
+    /* tinymce */
+    "TINYMCE_LANGUAGE"=>"fr_FR",
+    /* SPAM */
+    "CHECK_SPAM_SCORE"=>"Calculer le score spam"
     );
 
 

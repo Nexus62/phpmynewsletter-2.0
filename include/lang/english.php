@@ -596,6 +596,10 @@ $lang_array=array (
     "F_SENT_ON"=>"Posted",
     "F_BROWSER_IFRAME"=>" Oops ! Your Browser doesn't support iframes !",
     "F_USE_THIS_AS_NEW_TEMPLATE_WITH_LIST"=>"Use this message as draft to start a noew campaign with list ",
+    /* tinymce */
+    "TINYMCE_LANGUAGE"=>"en_GB",
+    /* SPAM */
+    "CHECK_SPAM_SCORE"=>"Check spam score"
     );
 
 

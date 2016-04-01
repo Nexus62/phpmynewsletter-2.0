@@ -75,7 +75,11 @@ switch($op){
                 echo "<script src='/".$row_config_globale['path']."js/tinymce/tinymce.min.js'></script>
                     <script>
                     tinymce.init({
-                        selector: 'textarea#redac', theme: 'modern',
+                        selector: 'textarea#redac',
+                        theme: 'modern',
+                        forced_root_block : false,
+                        force_br_newlines : true,
+                        force_p_newlines : false,
                         plugins: [
                             'advlist autolink lists link image charmap print preview anchor',
                             'searchreplace visualblocks code fullscreen textcolor emoticons',
@@ -105,7 +109,7 @@ switch($op){
                         ],
                         relative_urls: false,
                         remove_script_host: false,
-                        language : 'fr_FR',
+                        language : '".tr("TINYMCE_LANGUAGE")."',
                         image_advtab: true ,
                         external_filemanager_path:'/".$row_config_globale['path']."js/tinymce/plugins/filemanager/',
                         filemanager_title:'Responsive Filemanager' ,
@@ -137,7 +141,6 @@ switch($op){
                     $(document).ready(function() { Si=setInterval(save,10000); });
                     function save(){
                         tinyMCE.triggerSave();
-                        //$('#as').html('".tr("SAVE_PROCESS")."...').show();
                         var ds=$('#mailform').serialize();
                         $.ajax({
                             type: 'POST',

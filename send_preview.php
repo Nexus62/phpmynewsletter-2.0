@@ -47,9 +47,16 @@ $encode  = (!empty($_GET['encode'])&&$_GET['encode']=='base64')  ? 'base64' : '8
 switch ($step) {
     case "sendpreview":
         $mail          = new PHPMailer;
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+            )
+        );
         $mail->CharSet = $row_config_globale['charset'];
         $mail->ContentType="text/html";
-        $mail->Encoding  = $encode ;
+        $mail->Encoding = $encode ;
         $mail->PluginDir= "include/lib/";
         $newsletter     = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
         $mail->From     = $newsletter['from_addr'];
@@ -144,8 +151,8 @@ switch ($step) {
         $body .= $message . $unsubLink . $trac ;
         $mail->Subject = $subject;
         $mail->Body    = $body;
-        $mail->addCustomHeader('List-Unsubscribe: <'. $row_config_globale['base_url'] . $row_config_globale['path'] . 'subscription.php?i='
-                    .$msg_id.'&list_id='.$list_id.'&op=leave&email_addr='.$addr.'&h=fake_hash>, <mailto:'.$newsletter['from_addr'].'>');
+        $mail->addCustomHeader('List-Unsubscribe: <'. $row_config_globale['base_url'] . $row_config_globale['path'] 
+              . 'subscription.php?i='.$msg_id.'&list_id='.$list_id.'&op=leave&email_addr='.$addr.'&h=fake_hash>');
         @set_time_limit(150);
         if (!$mail->Send()) {
             die(tr("ERROR_SENDING"));
@@ -159,8 +166,6 @@ switch ($step) {
         header("location:send_preview.php?step=sendpreview&begin=0&list_id=$list_id&msg_id=$msg_id&sn=$num&error=0&token=$token&encode=$encode");
         break;
 }
-
-
 
 
 

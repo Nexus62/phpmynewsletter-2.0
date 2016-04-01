@@ -387,7 +387,11 @@ function get_newsletter_total_subscribers($cnx, $email_table, $list_id, $msg_id)
                             FROM $email_table 
                         WHERE list_id ='$list_id' 
                             AND ERROR ='N'
-                            AND campaign_id != '$msg_id'")->fetch();
+                            AND (
+                                campaign_id != '$msg_id'
+                                OR
+                                campaign_id IS NULL)"
+                                )->fetch();
     return $row['CPT'];
 }
 function get_relative_path($filename) {
@@ -421,7 +425,10 @@ function getAddress($cnx,$table_email,$list_id,$begin='',$limit='',$msg_id) {
                                     FROM $table_email 
                                 WHERE list_id = '$list_id' 
                                     AND error='N' 
-                                    AND campaign_id != '$msg_id'
+                                    AND (
+                                        campaign_id != '$msg_id'
+                                        OR
+                                        campaign_id IS NULL)
                                 ORDER BY id ASC
                                 $limite")->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -1078,7 +1085,7 @@ function tok_val($token){
     $temps_de_connexion = 9999;
     @session_start();
     $tok = true;
-    if(isset($_SESSION['_token'])&&isset($_SESSION['_token_time'])&&isset($token)){
+    if(isset($_SESSION['_token'])&&isset($_SESSION['_token_time'])&&isset($token)&&!empty($token)){
         if($_SESSION['_token'] == $token){
             if($_SESSION['_token_time'] >= (time() - $temps_de_connexion)){
                 $_SESSION['_token_time'] = time();

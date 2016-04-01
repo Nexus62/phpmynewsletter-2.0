@@ -33,27 +33,36 @@ switch ($send_method) {
         }
         break;
     case 'lbsmtp':
-        $CURRENT_ID = @current($cnx->query("SELECT MAX( id_use ) AS CURRENT_ID FROM ".$row_config_globale['table_smtp'])->fetch());
+        // on sélectionne le dernier id_use activé :
+        echo '<br>'.$CURRENT_ID = @current($cnx->query("SELECT MAX( id_use ) AS CURRENT_ID FROM ".$row_config_globale['table_smtp'])->fetch());
+        // On va chercher un serveur qui n'a pas atteint sa limite qui a moins de 24 heures :
+        // SELECT * FROM test_smtp WHERE smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
         $info_smtp_lb = $cnx->SqlRow("SELECT * 
             FROM ".$row_config_globale['table_smtp']." 
                 WHERE smtp_used < smtp_limite                                /* quota disponible    */
                 AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY) /* moins de 24 heures  */
-            ORDER BY id_use ASC LIMIT 1");
+            ORDER BY id_use ASC LIMIT 1");     /* le id_use le plus petit */
+        // Déclaration smtp :
         $mail->IsSMTP();
+        // si on a de l'authentification :
         if($info_smtp_lb['smtp_user']!=''){
             $mail->SMTPAuth = true;
             $mail->Username = $info_smtp_lb['smtp_user'];
             $mail->Password = $info_smtp_lb['smtp_pass'];
         }
+        // si on a du secure :
         if($info_smtp_lb['smtp_secure']!=''){
             $mail->SMTPSecure = $info_smtp_lb['smtp_secure'];
         }
         $mail->Host = $info_smtp_lb['smtp_url'];
+        // le port
         if($info_smtp_lb['smtp_port']!=''){
             $mail->Port = $info_smtp_lb['smtp_port'];
         }else{
             $mail->Port = 25;
         }
+        var_dump($info_smtp_lb);
+        // on update le id_use à $CURRENT_ID+1 de l'article sélectionné et +1 au compteur smtp_used
         $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
                          SET 
                             smtp_used=smtp_used+1, id_use='.(intval($CURRENT_ID)+1).' /* update des champs dernier id_use et smtp_used */
@@ -145,15 +154,28 @@ switch ($send_method) {
             $mail->Password = $row_config_globale['smtp_pass'];
         }
         break;
+    case "smtp_one_com":
+        $mail->IsSMTP();
+        $mail->SMTPAuth = false;
+        $mail->Port = 25;
+        $mail->Host = 'mailout.one.com';
+        break;
+    case "smtp_one_com_ssl":
+        require_once(__DIR__.'/class.pop3.php');
+        $pop = new POP3();
+        $pop->Authorise("send.one.com", 465, 30, $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], 1);
+        $mail->IsSMTP();
+        $mail->SMTPAuth = true;
+        $mail->Port = 465;
+        $mail->SMTPSecure = 'ssl';
+        $mail->Host = 'send.one.com';
+        $mail->Username = $row_config_globale['smtp_login'];
+        $mail->Password = $row_config_globale['smtp_pass'];
+        break;
     default:
         die(tr("NO_SEND_DEFINITION"));
         break;
 }
-
-
-
-
-
 
 
 
