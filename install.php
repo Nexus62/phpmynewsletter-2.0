@@ -742,7 +742,7 @@ if (empty($langfile)) {
                 $alert_sub         = $cnx->CleanInput($alert_sub);
             }
             $admin_pass = md5($admin_pass);
-            $sql = "INSERT INTO " . $table_prefix . "config VALUES (
+            echo $sql = "INSERT INTO " . $table_prefix . "config VALUES (
                         '$admin_pass', '30', '$base_url', '$path',
                         '$sending_method', '$language', '" . $table_prefix . "email',
                         '" . $table_prefix . "temp','". $table_prefix . "listsconfig', '" . $table_prefix . "archives',
@@ -753,7 +753,9 @@ if (empty($langfile)) {
                         'utf-8', '" . $table_prefix . "track', '" . $table_prefix . "send',
                         '" . $table_prefix . "autosave', '" . $table_prefix . "send_suivi', 
                         '" . $table_prefix . "track_links', '" . $table_prefix . "upload',
-                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted','$alert_sub')";
+                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted',
+                        '$alert_sub','1')";
+                        die();
             if($cnx->Sql($sql)){
                 echo '<h4 class="alert_success">' . tr("INSTALL_SAVE_CONFIG") . ' ' .tr("DONE").'</h4>';
             }else{
