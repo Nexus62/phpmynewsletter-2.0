@@ -1124,7 +1124,7 @@ function UpdateEmailError($cnx,$table_email,$list_id,$email,$status,$type,$categ
                                     FROM ".$table_email_deleted." 
                                         WHERE list_id='".($cnx->CleanInput($list_id))."' 
                                             AND email='".($cnx->CleanInput($email))."'")->fetch());
-    if($hash==''){
+    if($hash!=''){
         if ($cnx->query("INSERT IGNORE INTO ".$table_email_deleted." (id,email,list_id,hash,error,status,type,categorie,short_desc,long_desc,campaign_id)
                             SELECT id,email,list_id,hash,'Y','".($cnx->CleanInput($status))."','".($cnx->CleanInput($type))."',
                                     '".($cnx->CleanInput($categorie))."','".($cnx->CleanInput($short_desc))."',
