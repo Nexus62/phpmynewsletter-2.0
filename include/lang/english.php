@@ -91,8 +91,10 @@ $lang_array=array (
     "SUBSCRIBER_ADD_BTN"=>"Add this email address",
     "SUBSCRIBER_ADDED"=>" %s successfully added",
     "SUBSCRIBER_IMPORT_TITLE"=>"Import an email list",
+    "SUBSCRIBER_IMPORT_BIG_LIST"=>"Import a large list of emails",
     "SUBSCRIBER_IMPORT_BTN"=>"Import suscribers from this file",
     "SUBSCRIBER_IMPORT_HELP"=>"You can import a list of e-mail from a file.",
+    "SUBSCRIBER_IMPORT_HELP_BIG_LIST"=>"Import a large list, with a specific treatment (eg 10.000 mails or more)",
     "SUBSCRIBER_MASS_DELETE"=>"Remove ",
     "SUBSCRIBER_MASS_DELETE_HELP"=>"You can delete a list of e-mail from a file.",
     "SUBSCRIBER_MASS_DELETE_BTN"=>"Remove subscribers from this file",
@@ -382,8 +384,9 @@ $lang_array=array (
     // INDEX :
     "ROOT_TO_FLUSH_MAIL_QUEUE"=>"You must enter root mode and call another command to flush the queue of mails in progress.",
     "MAIL_ADDED"=>"Email(s) added(s)",
+    "MAIL_IMPORTED"=>"Email(s) imported",
     "MAIL_MASS_DELETED"=>"Email(s) processed",
-    "MAIL_ADDED_ERROR"=>"Email (s) in error",
+    "MAIL_ADDED_ERROR"=>"Email(s) in error",
     "DASHBOARD"=>"Dashboard",
     "SUPPORT"=>"Support",
     "ADMINISTRATION"=>"Administration",
@@ -601,5 +604,3 @@ $lang_array=array (
     /* SPAM */
     "CHECK_SPAM_SCORE"=>"Check spam score"
     );
-
-

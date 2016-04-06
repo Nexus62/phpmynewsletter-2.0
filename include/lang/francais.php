@@ -91,8 +91,10 @@ $lang_array=array(
     "SUBSCRIBER_ADD_BTN"=>"Ajouter cette adresse électronique",
     "SUBSCRIBER_ADDED"=>"%s ajoutée avec succès",
     "SUBSCRIBER_IMPORT_TITLE"=>"Importer une liste d'adresse électronique",
+    "SUBSCRIBER_IMPORT_BIG_LIST"=>"Importer une grosse liste de mails",
     "SUBSCRIBER_IMPORT_BTN"=>"Importer les abonnés dans cette liste",
     "SUBSCRIBER_IMPORT_HELP"=>"Vous pouvez importer une liste d'adresses électroniques depuis un fichier.",
+    "SUBSCRIBER_IMPORT_HELP_BIG_LIST"=>"Importer une grosse liste, avec traitement spécifique à suivre (ex : 10.000 mails ou plus)",
     "SUBSCRIBER_MASS_DELETE"=>"Supprimer les abonnés en masse depuis un fichier",
     "SUBSCRIBER_MASS_DELETE_HELP"=>"Vous pouvez supprimer une liste d'adresses électroniques depuis un fichier.",
     "SUBSCRIBER_MASS_DELETE_BTN"=>"Supprimer les abonnés de cette liste",
@@ -384,8 +386,9 @@ $lang_array=array(
     // INDEX :
     "ROOT_TO_FLUSH_MAIL_QUEUE"=>"Vous devez passer en mode root et appeler une autre commande pour purger la file des mails en cours.",
     "MAIL_ADDED"=>"mail(s) ajouté(s)",
-    "MAIL_MASS_DELETED"=>"mail(s) traité(s)",
-    "MAIL_ADDED_ERROR"=>"mail(s) en erreur",
+    "MAIL_IMPORTED"=>"Email(s) importé(s)",
+    "MAIL_MASS_DELETED"=>"Email(s) traité(s)",
+    "MAIL_ADDED_ERROR"=>"Email(s) en erreur",
     "DASHBOARD"=>"Tableau de bord",
     "SUPPORT"=>"Support",
     "ADMINISTRATION"=>"Administration",
@@ -605,9 +608,6 @@ $lang_array=array(
     /* SPAM */
     "CHECK_SPAM_SCORE"=>"Calculer le score spam"
     );
-
-
-
 
 
 

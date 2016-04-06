@@ -32,6 +32,7 @@ if (!checkAdminAccess($row_config_globale['admin_pass'], $form_pass)) {
 }
 require('include/lib/PHPMailerAutoload.php');
 require('include/lib/Html2Text.php');
+require('include/lib/class.valideMail.php');
 $step    = (empty($_GET['step']) ? "" : $_GET['step']);
 $subject = (!empty($_SESSION['subject'])) ? $_SESSION['subject'] : '';
 $message = (!empty($_SESSION['message'])) ? $_SESSION['message'] : '';
@@ -56,11 +57,12 @@ switch ($step) {
         $daylog = @fopen('logs/daylog-' . date("Y-m-d") . '.txt', 'a+');
         $limit            = $row_config_globale['sending_limit'];
         $mail             = new PHPMailer();
+        $SMTP_Validator   = new SMTP_validateEmail();
         $mail->SMTPOptions = array(
             'ssl' => array(
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-            'allow_self_signed' => true
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
             )
         );
         $mail->CharSet    = $row_config_globale['charset'];
@@ -114,13 +116,13 @@ switch ($step) {
             $mail->DKIM_identity   = $DKIM_identity;
         }
         $to_send = count($addr);
-        require_once("include/lib/class.valideMail.php");
+        
         for ($i = 0; $i < $to_send; $i++) {
             $dest_adresse = trim($addr[$i]['email']);
             preg_match('/@((([^.]+)\.)+)([a-zA-Z]{3,}|[a-zA-Z.]{5,})/',$addr[$i]['email'],$arraytosend);
             $CONTINUE = false;
             if(!in_array($arraytosend[3],$domains_not_to_test)) {
-                $SMTP_Validator = new SMTP_validateEmail();
+                
                 $SMTP_Validator->debug = false;
                 $daylogmsg=date("Y-m-d H:i:s") . " : test SMTP pour ".$addr[$i]['email']."\n";
                 fwrite($daylog, $daylogmsg, strlen($daylogmsg));

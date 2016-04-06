@@ -48,6 +48,51 @@ echo "<header><h3>".tr("SUBSCRIBER_IMPORT_TITLE")."</h3></header>
 echo @$subscriber_op_msg_i;
 echo "</div>";
 echo "</article>";
+echo "</article>";
+echo '<article class="module width_full">';
+echo "<header><h3>".tr("SUBSCRIBER_IMPORT_BIG_LIST")."</h3></header>
+<div class='module_content'>
+<h4 class='alert_info'>".tr("SUBSCRIBER_IMPORT_HELP_BIG_LIST")."</h4>
+<br><div align='center'>
+<form action='include/process_big_list.php' method='post' enctype='multipart/form-data' name='bigimportform' id='bigimportform'>
+    <input type='file' name='import_big_file' class='input' />&nbsp;
+    <input type='submit' value='".tr("SUBSCRIBER_IMPORT_BTN")."' class='littlebutton' id='submit-btn-biglist' />
+    <input type='hidden' name='op' value='subscriber_import_big_list' />
+    <input type='hidden' name='page' value='subscribers' /> 
+    <input type='hidden' name='token' value='$token' />
+    <input type='hidden' name='list_id' value='$list_id' />
+    <img src='css/processing.gif' id='loading-img' style='display:none;' alt='Please Wait' />
+</form>
+</div>
+<div id='output'></div>
+<script type='text/javascript' src='js/jquery.form.min.js'></script>
+<script type='text/javascript'>
+$(document).ready(function() { 
+    var options = { 
+            target:'#output',
+            beforeSubmit:  beforeSubmit,
+            success:     afterSuccess,
+            resetForm:true
+    }; 
+    $('#bigimportform').submit(function() { 
+        $(this).ajaxSubmit(options);         
+        return false; 
+    }); 
+});
+function afterSuccess(){
+	$('#submit-btn-biglist').show();
+	$('#loading-img').hide();
+}
+function beforeSubmit(){
+    $('#submit-btn-biglist').hide();
+    $('#loading-img').show();
+    $('#output').html('<h4 class=\'alert_info\'><b>Import in progress... Please wait !</b></h4>');
+}
+</script>";
+
+echo @$subscriber_op_msg_bl;
+echo "</div>";
+echo "</article>";
 echo '<article class="module width_full">';
 echo "<header><h3>".tr("SUBSCRIBER_MASS_DELETE")."</h3></header>
 <div class='module_content'>
