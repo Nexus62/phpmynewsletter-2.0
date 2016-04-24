@@ -966,6 +966,13 @@ function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth 
     $mail          = new phpmailer();
     $mail->CharSet = $charset;
     $mail->PluginDir = "include/lib/";
+    $mail->SMTPOptions = array(
+            'ssl' => array(
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true
+            )
+        );
     switch ($send_method) {
         case "smtp":
             $mail->IsSMTP();
