@@ -1,6 +1,6 @@
 <?php
 $lang_array=array (
-    //BTN
+    "LN"=>"fr",
     "OK_BTN"=>"OK",
     "YES"=>"Yes",
     "NO"=>"No",

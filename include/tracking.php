@@ -141,7 +141,7 @@
             echo '<td>'. ($row['TOPEN']!=''?$row['TOPEN']:0).   '</td>';
             echo '<td>'. $row['TID'].                           '</td>';
             
-            $OPENRATE = @round(($row['TOPEN']/($row['cpt']-$row['error'])*100),1);//OPEN RATE
+            $OPENRATE = @round(($row['TID']/($row['cpt']-$row['error'])*100),1);//OPEN RATE
             echo '<td><a class="tooltip" title="'. tr( "TRACKING_BULLE_OPEN_RATE" ) .'">'.($OPENRATE>0?'<b>'.$OPENRATE.'</b>':0).'%</a></td>';
             
             $CTR = @round(($row['CPT_CLICKED']/$row['cpt']*100),1);//CTR

@@ -92,13 +92,12 @@ if (!empty($import_big_file) && $import_big_file != "none" && $import_big_file['
             }
         }
         echo "<h4 class='alert_success'><b>Total : $tx_import ".tr("MAIL_IMPORTED")."</b></h4>";
-        /*echo "<h4 class='alert_error'><b>".tr("MAIL_ADDED_ERROR")   ." :<br>
+        echo "<h4 class='alert_error'><b>".tr("MAIL_ADDED_ERROR")   ." :<br>
         - "     . tr("ERROR_ALREADY_SUBSCRIBER",$tx_error)          ."<br>
         - $tx_error_sql "       . tr("ERROR_SQL","")                   ."<br>
         - $tx_error_deleted "   . tr("EMAIL_ON_DELETED_LIST","")       ."<br>
         - $tx_error_invalid "   . tr("INVALID_MAIL")                ."<br>
         - $tx_final ".tr("MAIL_ADDED")."</b></h4>";
-        */
         /*
         suppression de la table temporaire
         */
@@ -110,7 +109,7 @@ if (!empty($import_big_file) && $import_big_file != "none" && $import_big_file['
     echo "<h4 class='alert_error'>".tr("ERROR_IMPORT_FILE_MISSING")." !</h4>";
 }
 $time_end = microtime(true);
-echo '<br>$_execution_time = '.($time_end - $time_start);
+echo '<br>$execution_time = '.($time_end - $time_start);
 
 
 

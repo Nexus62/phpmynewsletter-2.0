@@ -49,10 +49,10 @@ if(empty($id_mail)&&empty($list_id)){
         <script type="text/javascript">
         $(document).ready(function() { $(".tablesorter").tablesorter(); } );
         </script>
-        <script type="text/javascript" src="//www.amcharts.com/lib/3/amcharts.js"></script>
-        <script type="text/javascript" src="//www.amcharts.com/lib/3/pie.js"></script>
-        <script type="text/javascript" src="//www.amcharts.com/lib/3/themes/light.js"></script>
-        <script type="text/javascript" src="//www.amcharts.com/lib/3/themes/none.js"></script>
+        <script type="text/javascript" src="js/amcharts/amcharts.js"></script>
+        <script type="text/javascript" src="js/amcharts/pie.js"></script>
+        <script type="text/javascript" src="js/amcharts/themes/light.js"></script>
+        <script type="text/javascript" src="js/amcharts/themes/none.js"></script>
     </head>
     <body>
         <section class="column">

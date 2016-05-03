@@ -48,7 +48,7 @@ if(count($detail_task)==0){
     */
     $date = date("Y-m-d H:i:s");
     $cnx->query('INSERT INTO '.$row_config_globale['table_archives'].' (id,date,type,subject,message,list_id)
-                    SELECT "'.$detail_task[0]['msg_id'].'",CURTIME(),type,mail_subject,mail_body,list_id FROM '.$row_config_globale['table_crontab'].'
+                    SELECT "'.$detail_task[0]['msg_id'].'","'.$date.'",type,mail_subject,mail_body,list_id FROM '.$row_config_globale['table_crontab'].'
                         WHERE list_id = "'.$detail_task[0]['list_id'].'" AND job_id = "'.$task_id.'"');
     $daylog = @fopen(DOCROOT.'/logs/daylog-' . date("Y-m-d") . '.txt', 'a+');
     $daylogmsg=date("d M Y"). " : message sauvegardé sous Numéro d'envoi : ".$detail_task[0]['msg_id']."\n";
@@ -110,6 +110,13 @@ if(count($detail_task)==0){
     // la boucle
     $limit          = $row_config_globale['sending_limit'];
     $mail           = new PHPMailer();
+    $mail->SMTPOptions = array(
+        'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+    );
     $mail->CharSet  = $row_config_globale['charset'];
     $mail->PluginDir= DOCROOT.'/include/lib/';
     $newsletter     = getConfig($cnx, $detail_task[0]['list_id'], $row_config_globale['table_listsconfig']);
@@ -315,8 +322,7 @@ if(count($detail_task)==0){
               $row_config_globale['admin_name'], $subj, $rapport, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], 
               $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
 }
-
-
+exit(0);
 
 
 

@@ -54,8 +54,8 @@ if($type_serveur=='dedicated'){
         <header>
             <h3><?=tr("UNDISTURBED_TITLE_GRPH_AND_ERROR");?></h3>
         </header>
-        <script type="text/javascript" src="http://www.amcharts.com/lib/3/amcharts.js"></script>
-        <script type="text/javascript" src="http://www.amcharts.com/lib/3/pie.js"></script>
+        <script type="text/javascript" src="//www.amcharts.com/lib/3/amcharts.js"></script>
+        <script type="text/javascript" src="//www.amcharts.com/lib/3/pie.js"></script>
         <div class="module_content">
             <fieldset>
                 <label><?=tr("UNDISTURBED_LABEL_ERROR");?></label>

@@ -108,13 +108,13 @@ function addSubscriberTemp($cnx, $table_email, $table_temp, $list_id, $addr) {
 }
 function append_cronjob($command){
     if(is_string($command)&&!empty($command)){
-        # 2.0.3
-        # exec('echo -e "`crontab -l`\n'.$command.'" | crontab -', $output);
-        # 2.0.4
-        # shell_exec("crontab -l | { cat; echo '$command'; } |crontab -");
-        exec("crontab -l | { cat; echo '$command'; } |crontab -");
+        exec("crontab -l | { cat; echo '$command'; } |crontab -",$output,$code_retour);
     }
-    return $output;
+    if( $code_retour !== 0 ) {
+        return false;
+    } else {
+        return true;
+    }
 }
 function build_sorter($key) {
     return function ($a, $b) use ($key) {
@@ -713,7 +713,10 @@ function quick_Exit(){
     session_destroy();
     header('Content-type: text/html; charset=utf-8');
     header("Location:login.php",true,307);
-    echo "<html></html>";flush();ob_flush();exit;
+    echo "<html></html>";
+    @flush();
+    @ob_flush();
+    exit;
 }
 function readfile_chunked($filename) { 
     $chunksize = 1*(1024*1024);
@@ -1131,7 +1134,7 @@ function UpdateEmailError($cnx,$table_email,$list_id,$email,$status,$type,$categ
                                     FROM ".$table_email_deleted." 
                                         WHERE list_id='".($cnx->CleanInput($list_id))."' 
                                             AND email='".($cnx->CleanInput($email))."'")->fetch());
-    if($hash!=''){
+    if($hash==''){
         if ($cnx->query("INSERT IGNORE INTO ".$table_email_deleted." (id,email,list_id,hash,error,status,type,categorie,short_desc,long_desc,campaign_id)
                             SELECT id,email,list_id,hash,'Y','".($cnx->CleanInput($status))."','".($cnx->CleanInput($type))."',
                                     '".($cnx->CleanInput($categorie))."','".($cnx->CleanInput($short_desc))."',
