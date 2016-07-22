@@ -18,6 +18,7 @@ $path=$storeFolder;
 $cycle=true;
 $max_cycles=50;
 $i=0;
+
 while($cycle && $i<$max_cycles){
     $i++;
     if($path==$current_path)  $cycle=false;
