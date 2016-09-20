@@ -128,7 +128,7 @@ switch ($step) {
             $body .= "<hr noshade='' color='#D4D4D4' width='90%' size='1'></div>";
             $new_url = 'href="' . $row_config_globale['base_url'] . $row_config_globale['path'] .'r.php?m='.$msg_id.'&h=fake_hash&l='.$list_id.'&r=';
             $message = preg_replace_callback(       
-                '/href="(http:\/\/)([^"]+)"/',
+                '/href="(http[s]?:\/\/)([^"]+)"/',
                 function($matches) {
                     global $new_url;
                     return $new_url . (urlencode(@$matches[1] . $matches[2])) . '"';

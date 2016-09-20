@@ -28,7 +28,7 @@ if(!$i && !$l && !$e && !$h) {
     $body .= "<hr noshade='' color='#D4D4D4' width='90%' size='1'></div>";
     $new_url = 'href="' . $row_config_globale['base_url'] . $row_config_globale['path'] .'r.php?m='.$i.'&h='.$h.'&l='.$l.'&r=';
     $message = preg_replace_callback(
-        '/href="(http:\/\/)?([^"]+)"/',
+        '/href="(http[s]?:\/\/)?([^"]+)"/',
         function($matches) {
             global $new_url;
             return $new_url.(urlencode(@$matches[1].$matches[2])).'"';

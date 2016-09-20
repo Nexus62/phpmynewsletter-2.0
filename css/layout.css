@@ -183,7 +183,6 @@ fieldset textarea:focus{outline:none;border:1px solid #77BACE;-webkit-box-shadow
 .cboxSlideshow_on #cboxSlideshow:hover{background-position:-100px -25px;}
 .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px;right:44px;}
 .cboxSlideshow_off #cboxSlideshow:hover{background-position:-75px -25px;}
-.bar{background:transparent url(gradient.png) repeat-x top left;float:left;clear:left;height:30px;}
 #result{width:300px;display:none;margin-top:-1px;border-top:0px;overflow:hidden;background-color:white;}
 .show{color:#898989;cursor:pointer;}
 .show:hover{background-color:#77bace;color:#fff;cursor:pointer;}
