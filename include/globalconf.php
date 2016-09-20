@@ -174,7 +174,7 @@ echo '<article class="module width_3_quarter">
         echo "<fieldset><label>".tr("GCONFIG_PORT")."</label>";
         echo "<input type='text' name='bounce_port' id='bounce_port' value='" . (!empty($bounce_port) ? $bounce_port : '110') . "' /></fieldset>";
         echo "<fieldset><label>".tr("GCONFIG_SERVICE")."</label>";
-        echo "<input type='text' name='bounce_service' id='bounce_service' value='" . (!empty($bounce_service) ? $bounce_service : 'pop3') . "' /></fieldset>";
+        echo "<input type='text' name='bounce_service' id='bounce_service' value='" . (isset($bounce_service) ? $bounce_service : 'pop3') . "' /></fieldset>";
         echo "<fieldset><label>".tr("GCONFIG_SERVICE_OPTION")."</label>";
         echo "<input type='text' name='bounce_option' id='bounce_option' value='" . (!empty($bounce_option) ? $bounce_option : 'notls') . "'></fieldset>";
         echo "<input type='button' name='action' id='TestBounce' value='".tr("GCONFIG_TEST_BOUNCE")."' />";
