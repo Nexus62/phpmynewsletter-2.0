@@ -33,6 +33,7 @@ $lang_array=array (
     "AVAILABLE_NEWSLETTER"=>"existing info Letters",
     //ADMIN LOGIN // admin / login.php
     "LOGIN_TITLE"=>"Identification",
+    "LOGIN_PLEASE_MAIL_ADMIN"=>"Mail required",
     "LOGIN_PLEASE_ENTER_PASSWORD"=>"Password required",
     "LOGIN_PASSWORD"=>"Password",
     "LOGIN"=>"Connection",

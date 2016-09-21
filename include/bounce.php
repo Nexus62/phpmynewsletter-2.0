@@ -8,11 +8,11 @@ if(!file_exists("config.php")) {
     exit;
 } else {
     include("../_loader.php");
-    $token=(empty($_POST['token'])?"":$_POST['token']);
-    if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token']);
+    $token=($_POST['token']!=""?"":$_POST['token']);
+    if(!isset($token) || (isset($token)&&$token==""))$token=($_GET['token']!=""?"":$_GET['token']);
     if(!tok_val($token)){
         header("Location:../login.php?error=2");
-        exit;
+        die();
     }
 }
 $row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
@@ -21,15 +21,10 @@ if($r != 'SUCCESS') {
     include("lang/english.php");
     echo "<div class='error'>".tr($r)."<br>";
     echo "</div>";
-    exit;
+    die();
 }
 if(empty($row_config_globale['language']))$row_config_globale['language']="english";
 include("lang/".$row_config_globale['language'].".php");
-$form_pass = (empty($_POST['form_pass']) ? "" : $_POST['form_pass']);
-if (!checkAdminAccess($row_config_globale['admin_pass'], $form_pass)) {
-    header("Location:../index.php");
-    exit();
-}
 $list_id = (!empty($_POST['list_id'])) ? intval($_POST['list_id']) : '';
 $list_id = (!empty($_GET['list_id']) && empty($list_id)) ? intval($_GET['list_id']) : intval($list_id);
 $campaign_id = $cnx->SqlRow("SELECT MAX(id_mail) AS id_mail FROM ".$row_config_globale['table_send']." WHERE id_list=$list_id");

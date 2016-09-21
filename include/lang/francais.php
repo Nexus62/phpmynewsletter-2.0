@@ -33,9 +33,10 @@ $lang_array=array(
     "AVAILABLE_NEWSLETTER"=>"Lettres d'info existantes",
     //ADMIN LOGIN admin/login.php
     "LOGIN_TITLE"=>"Identification",
-    "LOGIN_PLEASE_ENTER_PASSWORD"=>"Un mot de passe est requis pour accéder à la zone d'administration",
+    "LOGIN_PLEASE_MAIL_ADMIN"=>"Saisissez votre adresse e-mail",
+    "LOGIN_PLEASE_ENTER_PASSWORD"=>"Mot de passe",
     "LOGIN_PASSWORD"=>"Mot de passe",
-    "LOGIN"=>"Connection !",
+    "LOGIN"=>"Connexion !",
     "LOGIN_BAD_PASSWORD"=>"Mot de passe incorrect !",
     //MENU
     "MENU_SUBSCRIBERS"=> "Abonnés",

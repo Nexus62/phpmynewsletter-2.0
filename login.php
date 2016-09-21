@@ -1,26 +1,62 @@
 <?php
 session_start();
-$_SESSION=array();
-if(ini_get("session.use_cookies")){
-    $params = session_get_cookie_params();
-    setcookie(session_name(),'',time()-42000,
-        $params["path"],$params["domain"],
-        $params["secure"],$params["httponly"]
-    );
-}
-session_destroy();
 if (!file_exists("include/config.php")) {
     header("Location:install.php");
     exit;
 } else {
     include("_loader.php");
 }
-/*if(isset($_POST)&&
+if(isset($_POST)&&count($_POST)>2) {
+	$_SESSION['nbtt_connex']=(int)$nbtt_connex;
+	if(tok_val($_POST['token_connex'])){
+		$sub_mail = $cnx->CleanInput($_POST['form_mail_admin']);
+		$sub_pass = $cnx->CleanInput($_POST['form_pass']);
+		// est-ce que le mail et le pass correspondent ?
+		$is_admin=current($cnx->query("SELECT count(*) AS is_admin
+			FROM $table_global_config 
+				WHERE admin_pass=".escape_string($cnx,md5($sub_pass))." 
+					AND admin_email=".escape_string($cnx,$sub_mail).";")->fetch());
+		// oui on envoie sur l'index avec le token
+		if($is_admin) {
+			tok_gen();
+			header("Location: index.php?token=".$_SESSION['_token']."&connex=1");
+			die();
+		} else {
+			echo 'NOK';
+		}
+		// non, on cumule le nombre de connexion
+		echo $_SESSION['nbtt_connex']++;
+	} else {
+		// non, on cumule le nombre de connexion
+		$_SESSION['nbtt_connex']++;
+		// si le nombre de connexion est trop grand on header sur google par exemple !
+		if($_SESSION['nbtt_connex']>5){
+			sleep(5);
+			header("Location:https://www.google.com");
+			die();
+		}
+	
+	}
 
-
-}*/
-var_dump($_SERVER);
-$token = tok_gen();
+} else {
+	if($_SESSION['nbtt_connex']>5){
+		sleep(5);
+		header("Location:https://www.google.com");
+		die();
+	} else {
+		$nbtt_connex=$_SESSION['nbtt_connex'];
+		$_SESSION=array();
+		if(ini_get("session.use_cookies")){
+		    $params = session_get_cookie_params();
+		    setcookie(session_name(),'',time()-42000,
+		        $params["path"],$params["domain"],
+		        $params["secure"],$params["httponly"]
+		    );
+		}
+		tok_gen();
+		$_SESSION['nbtt_connex']=$nbtt_connex;
+	}
+}
 $error = (isset($_GET['error']) ? $_GET['error'] : 0);
 $row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
 (count($row_config_globale)>0) ? $r='SUCCESS' : $r='';
@@ -76,7 +112,7 @@ body{margin:0;padding:0;background:#fff;color:#fff;font-family:Arial;font-size:1
     <input name="form_pass" placeholder="<?=tr("LOGIN_PASSWORD");?>" type="password" value="" autocomplete="false" autocorrect="off" autocapitalize="off" spellcheck="false"><br>
     <input type="submit" value="<?=tr("LOGIN");?>">
     <input type='hidden' name='form' value='1' />
-    <input type='hidden' name='token_connex' value='<?=$token;?>' />
+    <input type='hidden' name='token_connex' value='<?=$_SESSION['_token'];?>' />
 </form>
 </div>
 <script src="js/jquery.min.js"></script>
