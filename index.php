@@ -20,13 +20,21 @@ if($r != 'SUCCESS'){
 if(empty($row_config_globale['language']))$row_config_globale['language']="english";
 include("include/lang/".$row_config_globale['language'].".php");
 $form_pass=(empty($_POST['form_pass'])?"":$_POST['form_pass']);
-if(!isset($form_pass) || $form_pass=="")$form_pass=(empty($_GET['form_pass'])?"":$_GET['form_pass']);
+$form_mail_admin=(empty($_POST['form_mail_admin'])?"":$_POST['form_mail_admin']);
 $token=(empty($_POST['token'])?"":$_POST['token']);
-if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token']);
+if(!isset($token) || $token=="") {
+    $token=(empty($_GET['token'])?"":$_GET['token']);
+}
+
+
+
+
+var_dump($_POST);
 if(tok_val($token)){
-    if(!checkAdminAccess($row_config_globale['admin_pass'],$form_pass)==true){
+    if(!checkAdminAccess($cnx, $row_config_globale['admin_pass'],$form_pass,$form_mail_admin)==true){
         quick_Exit();
-    }
+    } else
+        continue;
 } else {
     quick_Exit();
 }
@@ -39,6 +47,7 @@ if(file_exists('include/config_bounce.php')){
     include('include/config_bounce.php');
 }
 $list_name=-1;
+
 if(empty($list_id)){
     $list_id = get_first_newsletter_id($cnx,$row_config_globale['table_listsconfig']);
 }

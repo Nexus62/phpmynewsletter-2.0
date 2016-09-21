@@ -15,6 +15,11 @@ if (!file_exists("include/config.php")) {
 } else {
     include("_loader.php");
 }
+/*if(isset($_POST)&&
+
+
+}*/
+var_dump($_SERVER);
 $token = tok_gen();
 $error = (isset($_GET['error']) ? $_GET['error'] : 0);
 $row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
@@ -26,6 +31,7 @@ if($r != 'SUCCESS') {
     exit;
 }
 include("include/lang/".$row_config_globale['language'].".php");
+
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -46,7 +52,7 @@ body{margin:0;padding:0;background:#fff;color:#fff;font-family:Arial;font-size:1
 .header div{float:left;color:#fff;font-family:'Exo', sans-serif;font-size:35px;}
 .header div span{color:#5379fa !important;}
 .login{position:absolute;top:calc(50% - 75px);left:calc(50%);height:150px;width:350px;padding:10px;z-index:2;}
-.login input[type=password]{width:260px;height:30px;background:transparent;border:1px solid rgba(255,255,255,0.6);border-radius:2px;color:#fff;font-family:'Exo', sans-serif;font-size:16px;font-weight:400;padding:4px;margin-top:10px;}
+.login input[type=email],.login input[type=text],.login input[type=password]{width:260px;height:30px;background:transparent;border:1px solid rgba(255,255,255,0.6);border-radius:2px;color:#fff;font-family:'Exo', sans-serif;font-size:16px;font-weight:400;padding:4px;margin-top:10px;}
 .login input[type=button],.login input[type=submit]{width:270px;height:35px;background:#fff;border:1px solid #fff;cursor:pointer;border-radius:2px;color:#a18d6c;font-family:'Exo', sans-serif;font-size:16px;font-weight:400;padding:6px;margin-top:10px;}
 .login input[type=button]:hover,.login input[type=submit]:hover{opacity:0.8;}
 .login input[type=button]:active,.login input[type=submit]:active{opacity:0.6;}
@@ -63,11 +69,14 @@ body{margin:0;padding:0;background:#fff;color:#fff;font-family:Arial;font-size:1
 <div class="header"><div>PhpMy<span>NewsLetter</span></div></div>
 <br>
 <div class="login">
-<form action='index.php' method='post' name='loginform'>
-    <input type="password" placeholder="<?=tr("LOGIN_PLEASE_ENTER_PASSWORD");?>" name="form_pass"><br>
+<form action='login.php' method='post' name='loginform' autocomplete='false'>
+    <input type="text" name="prevent_autofill" id="prevent_autofill" value="" style="display:none;" />
+    <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
+    <input name="form_mail_admin"  placeholder="<?=tr("LOGIN_PLEASE_MAIL_ADMIN");?>" type="email" value="" autocomplete="false" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus><br>
+    <input name="form_pass" placeholder="<?=tr("LOGIN_PASSWORD");?>" type="password" value="" autocomplete="false" autocorrect="off" autocapitalize="off" spellcheck="false"><br>
     <input type="submit" value="<?=tr("LOGIN");?>">
     <input type='hidden' name='form' value='1' />
-    <input type='hidden' name='token' value='<?=$token;?>' />
+    <input type='hidden' name='token_connex' value='<?=$token;?>' />
 </form>
 </div>
 <script src="js/jquery.min.js"></script>

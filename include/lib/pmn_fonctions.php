@@ -121,7 +121,7 @@ function build_sorter($key) {
         return strnatcmp($a[$key], $b[$key]);
     };
 }
-function checkAdminAccess($conf_pass, $admin_pass) {
+function checkAdminAccess($cnx, $conf_pass, $admin_pass, $admin_mail) {
     if (!empty($_COOKIE['PMNLNG_admin_password']) && ($_COOKIE['PMNLNG_admin_password'] == $conf_pass)) {
         return true;
     } else {
