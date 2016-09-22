@@ -328,17 +328,17 @@ switch($op){
                 $('.button').hide('slow');
                 $('html,body').animate({scrollTop:'0px'},500);
                 $('#msg').show();
-                $('#smail').html("<?=tr("PROGRESSION_OF_CURRENT_SEND");?>");
+                $('#smail').html("<?php echo tr("PROGRESSION_OF_CURRENT_SEND");?>");
                 $(function(){
                     var begin   = 0;
                     var sn      = 0;
                     var step    = '';
                     var pct     = 0;
-                    var list_id = <?=(($list_id)+0);?>;
-                    var token   = '<?=$token;?>';
+                    var list_id = <?php echo (($list_id)+0);?>;
+                    var token   = '<?php echo $token;?>';
                     var msg_id  = 0;
                     var tts     = 0;
-                    var encode  = '<?=$encode;?>';
+                    var encode  = '<?php echo $encode;?>';
                     function progresspump(){ 
                         $.ajax({
                             url:"send.php",
@@ -358,11 +358,11 @@ switch($op){
                                 $("#ch_last").html(tts);
                                 if(pct > 99.999) {
                                     clearInterval(progresspump);
-                                    $("#send_title").text("<?=tr("SEND_ENDED");?>...");
-                                    $("#all_done").html("<?=tr("REDIRECT_NOW");?>...");
-                                    $('#smail').html("<?=tr("SCHEDULE_END_PROCESS");?>");
+                                    $("#send_title").text("<?php echo tr("SEND_ENDED");?>...");
+                                    $("#all_done").html("<?php echo tr("REDIRECT_NOW");?>...");
+                                    $('#smail').html("<?php echo tr("SCHEDULE_END_PROCESS");?>");
                                     setTimeout(function() {
-                                        window.location.href='?page=tracking&list_id=<?=$list_id;?>&token=<?=$token;?>';
+                                        window.location.href='?page=tracking&list_id=<?php echo $list_id;?>&token=<?php echo $token;?>';
                                     },1000);
                                 }
                             }
@@ -374,7 +374,7 @@ switch($op){
         </script>
         <div id='msg' style='display:none'>
             <article class="module width_full">
-            <header><h3 id='send_title'><?=tr("PROGRESSION_OF_CURRENT_SEND");?></h3></header>
+            <header><h3 id='send_title'><?php echo tr("PROGRESSION_OF_CURRENT_SEND");?></h3></header>
                 <div class="module_content">
                     <article class='stats_graph' style='height:143px;'>
                         <div class='record' style='height:30px;border: 1px solid #9BA0AF;'><div id='pct' class='bar' style='width:0%'></div></div>
@@ -382,16 +382,16 @@ switch($op){
                     </article>
                     <article class="stats_overview">
                         <div class="overview_today">
-                            <p class="overview_day"><?=tr("COMPOSE_SENDING");?></p>
+                            <p class="overview_day"><?php echo tr("COMPOSE_SENDING");?></p>
                             <p class="overview_count" id='done'>0,00%</p>
-                            <p class="overview_type">% <?=tr("SENDED");?></p>
+                            <p class="overview_type">% <?php echo tr("SENDED");?></p>
                             <p class="overview_count" id='total_to_send'>0</p>
-                            <p class="overview_type"><?=tr("TOTAL_TO_SEND");?></p>
+                            <p class="overview_type"><?php echo tr("TOTAL_TO_SEND");?></p>
                         </div>
                         <div class="overview_previous">
-                            <p class="overview_day"><?=tr("CHRONO");?></p>
+                            <p class="overview_day"><?php echo tr("CHRONO");?></p>
                             <p class="overview_count" id='ch_last'>0</p>
-                            <p class="overview_type"><?=tr("LAST_TIME_SEND");?></p>
+                            <p class="overview_type"><?php echo tr("LAST_TIME_SEND");?></p>
                         </div>
                     </article>
                     <div class="clear"></div>

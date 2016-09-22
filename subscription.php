@@ -44,7 +44,7 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
 <html lang="fr">
     <head>
         <meta charset="utf-8" />
-        <title><?=tr("NEWSLETTER_TITLE");?></title>
+        <title><?php echo tr("NEWSLETTER_TITLE");?></title>
         <link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
         <!--[if lte IE 8]>
         <link rel="stylesheet" href="css/ie.css" type="text/css" media="screen" />

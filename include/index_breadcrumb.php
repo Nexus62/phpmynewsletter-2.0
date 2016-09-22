@@ -1,4 +1,4 @@
-        <article class="breadcrumbs"><a href="?page=listes&token=<?=$token;?>&l=l"><?=tr("ADMINISTRATION");?></a>
+        <article class="breadcrumbs"><a href="?page=listes&token=<?php echo $token;?>&l=l"><?php echo tr("ADMINISTRATION");?></a>
             <?php
             if($page == "listes"){
                 echo '<div class="breadcrumb_divider"></div> <a class="current">'.tr("LISTS").'</a>';
@@ -48,4 +48,4 @@
                 echo '<div class="breadcrumb_divider"></div> <a class="current">'.tr("GCONFIG_SMTP_LB_TITLE").'</a>';
             }
             ?>
-            </article>
+        </article>

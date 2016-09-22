@@ -49,10 +49,10 @@ if(!$list&&$page!="config"){
 }
 ?>
 <!DOCTYPE HTML>
-<html lang="<?=tr("LN");?>">
+<html lang="<?php echo tr("LN");?>">
 <head>
     <meta charset="utf-8" />
-    <title><?=tr("TITLE_ADMIN_PAGE");?></title>
+    <title><?php echo tr("TITLE_ADMIN_PAGE");?></title>
     <link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="css/ie.css" type="text/css" media="screen" />
@@ -139,7 +139,7 @@ if(!$list&&$page!="config"){
         });
     })(jQuery);
     $(document).ready(function(){$(".iframe").colorbox({iframe:true,width:"80%",height:"80%"});});
-    $('#ts').jsclock('<?=date('H:i:s');?>');
+    $('#ts').jsclock('<?php echo date('H:i:s');?>');
     <?php
     $sticky_pages=array('undisturbed','config','compose','listes','newsletterconf','manager_mailq');
     if(in_array($page,$sticky_pages)){
@@ -161,7 +161,7 @@ if(!$list&&$page!="config"){
     $(function(){
         $("input#searchid").keyup(function(){ 
             var searchid = $(this).val();
-            var token    = '<?=$token;?>';
+            var token    = '<?php echo $token;?>';
             var dataString = 'search='+ searchid +'&token='+token;
             if(searchid!=''){
                 $.ajax({

@@ -58,7 +58,7 @@ if(empty($id_mail)&&empty($list_id)){
         <section class="column">
             <article class="module width_full">
                 <header>
-                    <h3> <?=tr("CLICKED_LINK_REPORT");?></h3>
+                    <h3> <?php echo tr("CLICKED_LINK_REPORT");?></h3>
                 </header>
                 <?php
                 $count_clicked_links = $cnx->query("SELECT SUM(cpt) AS CPT 
@@ -102,11 +102,11 @@ if(empty($id_mail)&&empty($list_id)){
                         <section>                                                                            
                             <article class="module width_full">
                                 <header>
-                                    <h3> <?=tr("CLICKED_LINK_REPORT_GRAPHIC");?></h3>
+                                    <h3> <?php echo tr("CLICKED_LINK_REPORT_GRAPHIC");?></h3>
                                 </header>
                                 <div id="chartdiv"></div>
                                 <script>
-                                    var chartLinks = AmCharts.makeChart("chartdiv",{"type":"pie","theme":"none","dataProvider":[<?=$chart_data;?>],"valueField":"value",
+                                    var chartLinks = AmCharts.makeChart("chartdiv",{"type":"pie","theme":"none","dataProvider":[<?php echo $chart_data;?>],"valueField":"value",
                                     "titleField":"data","outlineAlpha":0.4,"depth3D": 15,"balloonText":"[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle":30});
                                 </script>
                             </article>
@@ -132,11 +132,11 @@ if(empty($id_mail)&&empty($list_id)){
             <section>                                                                            
                 <article class="module width_full">
                     <header>
-                        <h3> <?=tr("CLICKED_LINK_REPORT_ENVIRONMENT");?></h3>
+                        <h3> <?php echo tr("CLICKED_LINK_REPORT_ENVIRONMENT");?></h3>
                     </header>
                     <div id="chartdiv1"></div>
                     <script>
-                        var chartEnv=AmCharts.makeChart("chartdiv1",{"type":"pie","theme":"light","dataProvider":[<?=$chart_env;?>],"valueField":"value",
+                        var chartEnv=AmCharts.makeChart("chartdiv1",{"type":"pie","theme":"light","dataProvider":[<?php echo $chart_env;?>],"valueField":"value",
                         "titleField":"data","outlineAlpha":0.4,"depth3D": 15,"balloonText":"[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle":30});
                     </script>
                 </article>
@@ -157,11 +157,11 @@ if(empty($id_mail)&&empty($list_id)){
             <section>                                                                            
                 <article class="module width_full">
                     <header>
-                        <h3> <?=tr("CLICKED_LINK_REPORT_OS");?></h3>
+                        <h3> <?php echo tr("CLICKED_LINK_REPORT_OS");?></h3>
                     </header>
                     <div id="chartdiv2"></div>
                     <script>
-                        var chartEnv=AmCharts.makeChart("chartdiv2",{"type":"pie","theme":"light","dataProvider":[<?=$chart_env;?>],"valueField":"value",
+                        var chartEnv=AmCharts.makeChart("chartdiv2",{"type":"pie","theme":"light","dataProvider":[<?php echo $chart_env;?>],"valueField":"value",
                         "titleField":"data","outlineAlpha":0.4,"depth3D": 15,"balloonText":"[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle":30});
                     </script>
                 </article>
@@ -182,11 +182,11 @@ if(empty($id_mail)&&empty($list_id)){
             <section>                                                                            
                 <article class="module width_full">
                     <header>
-                        <h3> <?=tr("CLICKED_LINK_REPORT_SUPPORT");?></h3>
+                        <h3> <?php echo tr("CLICKED_LINK_REPORT_SUPPORT");?></h3>
                     </header>
                     <div id="chartdiv3"></div>
                     <script>
-                        var chartEnv=AmCharts.makeChart("chartdiv3",{"type":"pie","theme":"light","dataProvider":[<?=$chart_env;?>],"valueField":"value",
+                        var chartEnv=AmCharts.makeChart("chartdiv3",{"type":"pie","theme":"light","dataProvider":[<?php echo $chart_env;?>],"valueField":"value",
                         "titleField":"data","outlineAlpha":0.4,"depth3D": 15,"balloonText":"[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle":30});
                     </script>
                 </article>

@@ -22,11 +22,7 @@ $form_pass=(empty($_POST['form_pass'])?"":$_POST['form_pass']);
 if(!isset($form_pass) || $form_pass=="")$form_pass=(empty($_GET['form_pass'])?"":$_GET['form_pass']);
 $token=(empty($_POST['token'])?"":$_POST['token']);
 if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token']);
-if(tok_val($token)){
-    if(!checkAdminAccess($row_config_globale['admin_pass'],$form_pass)==true){
-        quick_Exit();
-    }
-} else {
+if(!tok_val($token)){
     quick_Exit();
 }
 

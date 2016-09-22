@@ -62,7 +62,7 @@
 </div>
 <div id="addsmtp">
     <article class="module width_full"><header><h3>Déclarer un nouveau serveur SMTP : </h3></header>
-    <form action='<?=$_SERVER['PHP_SELF'];?>' method='post'>
+    <form action='<?php echo $_SERVER['PHP_SELF'];?>' method='post'>
     <table cellspacing="0" class="tablesorter"> 
         <thead> 
             <tr> 
@@ -98,10 +98,10 @@
             </tr>
         </tbody>
     </table>
-    <input type='hidden' name='token' value='<?=$token;?>' />
+    <input type='hidden' name='token' value='<?php echo $token;?>' />
     <input type='hidden' name='op' value='smtp_add' />
     <input type='hidden' name='page' value='configsmtp' />
-    <input type='hidden' name='list_id' value='<?=$list_id;?>' />
+    <input type='hidden' name='list_id' value='<?php echo $list_id;?>' />
     </form>
     </article>
 </div>

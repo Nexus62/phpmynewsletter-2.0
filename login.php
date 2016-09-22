@@ -108,11 +108,11 @@ body{margin:0;padding:0;background:#fff;color:#fff;font-family:Arial;font-size:1
 <form action='login.php' method='post' name='loginform' autocomplete='false'>
     <input type="text" name="prevent_autofill" id="prevent_autofill" value="" style="display:none;" />
     <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
-    <input name="form_mail_admin"  placeholder="<?=tr("LOGIN_PLEASE_MAIL_ADMIN");?>" type="email" value="" autocomplete="false" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus><br>
-    <input name="form_pass" placeholder="<?=tr("LOGIN_PASSWORD");?>" type="password" value="" autocomplete="false" autocorrect="off" autocapitalize="off" spellcheck="false"><br>
-    <input type="submit" value="<?=tr("LOGIN");?>">
+    <input name="form_mail_admin"  placeholder="<?php echo tr("LOGIN_PLEASE_MAIL_ADMIN");?>" type="email" value="" autocomplete="false" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus><br>
+    <input name="form_pass" placeholder="<?php echo tr("LOGIN_PASSWORD");?>" type="password" value="" autocomplete="false" autocorrect="off" autocapitalize="off" spellcheck="false"><br>
+    <input type="submit" value="<?php echo tr("LOGIN");?>">
     <input type='hidden' name='form' value='1' />
-    <input type='hidden' name='token_connex' value='<?=$_SESSION['_token'];?>' />
+    <input type='hidden' name='token_connex' value='<?php echo $_SESSION['_token'];?>' />
 </form>
 </div>
 <script src="js/jquery.min.js"></script>

@@ -1,5 +1,5 @@
 <article class="module width_full">
-    <header><h3><?=tr("TRACKING_TITLE");?></h3></header>
+    <header><h3><?php echo tr("TRACKING_TITLE");?></h3></header>
     <?php
     $row_cnt = get_id_send($cnx,$list_id,$row_config_globale['table_send']);
     if($row_cnt['CPTID'] > 0){
@@ -32,35 +32,35 @@
                             "balloonText": "[[title]] : [[value]]",
                             "bullet": "round",
                             "id": "envois",
-                            "title": "<?=tr("TRACKING_SEND");?>",
+                            "title": "<?php echo tr("TRACKING_SEND");?>",
                             "valueField": "c1"
                         },
                         {
                             "balloonText": "[[title]] : [[value]]",
                             "bullet": "round",
                             "id": "erreurs",
-                            "title": "<?=tr("TRACKING_ERROR");?>",
+                            "title": "<?php echo tr("TRACKING_ERROR");?>",
                             "valueField": "c2"
                         },
                         {
                             "balloonText": "[[title]] : [[value]]",
                             "bullet": "round",
                             "id": "ouvertures",
-                            "title": "<?=tr("TRACKING_OPENED");?>",
+                            "title": "<?php echo tr("TRACKING_OPENED");?>",
                             "valueField": "c3"
                         },
                         {
                             "balloonText": "[[title]] : [[value]]",
                             "bullet": "round",
                             "id": "lectures",
-                            "title": "<?=tr("TRACKING_READ");?>",
+                            "title": "<?php echo tr("TRACKING_READ");?>",
                             "valueField": "c4"
                         },
                         {
                             "balloonText": "[[title]] : [[value]]",
                             "bullet": "round",
                             "id": "abandons",
-                            "title": "<?=tr("TRACKING_UNSUB");?>",
+                            "title": "<?php echo tr("TRACKING_UNSUB");?>",
                             "valueField": "c5"
                         },
                     ],
@@ -68,7 +68,7 @@
                     "valueAxes": [
                         {
                             "id": "ValueAxis-1",
-                            "title": "<?=tr("TRACKING_COUNT");?>"
+                            "title": "<?php echo tr("TRACKING_COUNT");?>"
                         }
                     ],
                     "allLabels": [],
@@ -81,7 +81,7 @@
                         {
                             "id": "Title-1",
                             "size": 15,
-                            "text": "<?=tr("TRACKING_STATS_GRAPHICS_REPORT");?>"
+                            "text": "<?php echo tr("TRACKING_STATS_GRAPHICS_REPORT");?>"
                         }
                     ],
                     "dataProvider": [

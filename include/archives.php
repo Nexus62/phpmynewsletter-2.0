@@ -62,9 +62,9 @@ if (!empty($msg_id) && empty($action)) {
                 $(function(){
                     var step    = 'send';
                     var pct     = 0;
-                    var list_id = <?=intval($list_id);?>;
-                    var token   = '<?=$token;?>';
-                    var msg_id  = <?=$msg_id;?>;
+                    var list_id = <?php echo intval($list_id);?>;
+                    var token   = '<?php echo $token;?>';
+                    var msg_id  = <?php echo $msg_id;?>;
                     var tts     = 0;
                     function progresspump(){ 
                         $.ajax({
@@ -84,12 +84,12 @@ if (!empty($msg_id) && empty($action)) {
                                 if(pct > 99.999) {
                                     clearInterval(progresspump);
                                     $('.record').hide('slow');
-                                    $("#send_title").text("<?=tr("SEND_ENDED");?>");
+                                    $("#send_title").text("<?php echo tr("SEND_ENDED");?>");
                                     setTimeout(function() {
-                                        $("#send_title").text("<?=tr("REDIRECT_NOW");?>");
+                                        $("#send_title").text("<?php echo tr("REDIRECT_NOW");?>");
                                     },3000);
                                     setTimeout(function() {
-                                        window.location.href='?page=tracking&list_id=<?=$list_id;?>&token=<?=$token;?>&date=ch';
+                                        window.location.href='?page=tracking&list_id=<?php echo $list_id;?>&token=<?php echo $token;?>&date=ch';
                                     },3000);
                                 }
                             }
@@ -99,7 +99,7 @@ if (!empty($msg_id) && empty($action)) {
             });
         </script>
         <div id='msg' style='display:none'>
-            <h2 id='send_title'><?=tr("PROGRESSION_OF_CURRENT_SEND");?> :</h2>
+            <h2 id='send_title'><?php echo tr("PROGRESSION_OF_CURRENT_SEND");?> :</h2>
             <div class="8u"><div class="record"><div id="pct" class="bar" style="width:0%"><span id="done">0,00%</span></div></div></div>
             <br><br>
         </div>

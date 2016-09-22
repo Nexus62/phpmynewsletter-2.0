@@ -5,15 +5,15 @@ if(isset($_POST['NEWTASK'])&&$_POST['NEWTASK']=='SCHEDULE_NEW_TASK'&&$list_id==$
     ?>
     <article class="module width_full" id="planifjob">
         <header>
-            <h3><?=tr("SCHEDULE_A_SEND");?></h3>
+            <h3><?php echo tr("SCHEDULE_A_SEND");?></h3>
         </header>
         <div class="module_content">
-                <?=tr("SCHEDULE_EXPLAIN", $subject);?>
+                <?php echo tr("SCHEDULE_EXPLAIN", $subject);?>
                 <fieldset>
                 <form id="cf">
                     <table width="100%" cellspacing="0"> 
                         <tr> 
-                            <?=tr("SCHEDULE_DATE_HEAD");?>
+                            <?php echo tr("SCHEDULE_DATE_HEAD");?>
                         </tr> 
                         <tr>
                             <td width="20%" valign="top">
@@ -33,30 +33,30 @@ if(isset($_POST['NEWTASK'])&&$_POST['NEWTASK']=='SCHEDULE_NEW_TASK'&&$list_id==$
                             </td>
                             <td width="20%" valign="top">
                                 <select name="months" id="months">
-                                    <?=tr("SCHEDULE_MONTHS_OPTION");?>
+                                    <?php echo tr("SCHEDULE_MONTHS_OPTION");?>
                                 </select>
                             </td>
                         </tr>
                     </table>
                 </form>
                 </fieldset>
-            <?=tr("SCHEDULE_RESULT", $subject);?>
+            <?php echo tr("SCHEDULE_RESULT", $subject);?>
         </div>
         <footer>
             <div class="submit_link">
-                <input type="button" value="<?=tr("SUBMIT");?>" id="subcronjob">
+                <input type="button" value="<?php echo tr("SUBMIT");?>" id="subcronjob">
             </div>
         </footer>
     </article>
     <script type="text/javascript">
-        var months=["",<?=tr("SCHEDULE_JS_LIST_MONTH");?>],month,hour,minute,day;
+        var months=["",<?php echo tr("SCHEDULE_JS_LIST_MONTH");?>],month,hour,minute,day;
         function n(n){return n>9?""+n:"0"+n;}
         $("#mins").on("change",function(){$("#dmi").html(n($(this).val()))});
         $("#hours").on("change",function(){$("#dh").html(n($(this).val()))});
         $("#days").on("change",function(){$("#dd").html(n($(this).val()))});
         $("#months").on("change",function(){$("#dmo").html(months[$(this).val()])});
         $("#subcronjob").click(function(){
-            var ds='min='+$("#mins").val()+'&hour='+$("#hours").val()+'&day='+$("#days").val()+'&months='+$("#months").val()+'&token=<?=$token;?>&action=new&list_id=<?=$list_id;?>';
+            var ds='min='+$("#mins").val()+'&hour='+$("#hours").val()+'&day='+$("#days").val()+'&months='+$("#months").val()+'&token=<?php echo $token;?>&action=new&list_id=<?php echo $list_id;?>';
             $.ajax({
                 type:'POST',
                 url:'include/manager_cron.php',
@@ -118,7 +118,7 @@ if(isset($_POST['NEWTASK'])&&$_POST['NEWTASK']=='SCHEDULE_NEW_TASK'&&$list_id==$
             $(".deltask").click(function() {
                 var task=$(this).closest("form").attr("id");
                 var dt='.'+task;
-                var ds="deltask="+task+"&token=<?=$token;?>&list_id=<?=$list_id;?>&action=delete";
+                var ds="deltask="+task+"&token=<?php echo $token;?>&list_id=<?php echo $list_id;?>&action=delete";
                 $.ajax({type:"POST",
                     url:"include/manager_cron.php",
                     data:ds,

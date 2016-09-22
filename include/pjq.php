@@ -41,7 +41,7 @@ $("input.actionPj").click(function(){
     var hideItem='#'+$(this).closest("div").attr('id');
     $.ajax({type: "POST",
         url: "include/manager_pj.php",
-        data: "token=<?=$token;?>&list_id=<?=$list_id;?>&id="+$(this).closest("div").attr('id')+"&action=delete",
+        data: "token=<?php echo $token;?>&list_id=<?php echo $list_id;?>&id="+$(this).closest("div").attr('id')+"&action=delete",
         success: function(data){
             $(hideItem).html(data).addClass('success').hide('slow');
         }

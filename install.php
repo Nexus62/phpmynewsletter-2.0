@@ -28,7 +28,7 @@ if (empty($langfile)) {
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
-    <title><?=tr("INSTALL_TITLE");?></title>
+    <title><?php echo tr("INSTALL_TITLE");?></title>
     <link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="css/ie.css" type="text/css" media="screen" />
@@ -45,13 +45,13 @@ if (empty($langfile)) {
     <header id="header">
         <hgroup>
             <h1 class="site_title"><a href="http://www.phpmynewsletter.com">PhpMyNewsLetter</a></h1>
-            <h2 class="section_title"><?=tr("INSTALL_TITLE") . " " . $step . "/4";?></h2><div class="btn_view_site"><a href="http://www.phpmynewsletter.com/forum/" target="_blank"><?=tr("SUPPORT");?></a></div>
+            <h2 class="section_title"><?php echo tr("INSTALL_TITLE") . " " . $step . "/4";?></h2><div class="btn_view_site"><a href="http://www.phpmynewsletter.com/forum/" target="_blank"><?php echo tr("SUPPORT");?></a></div>
         </hgroup>
     </header>
     <section id="secondary_bar">
         <div class="breadcrumbs_container">
             <article class="breadcrumbs">
-                <a><?=tr("INSTALL_TITLE");?></a>
+                <a><?php echo tr("INSTALL_TITLE");?></a>
                 <?php
                 echo ($step==1?'<div class="breadcrumb_divider"></div><a class="current">'.tr("INSTALL_LANGUAGE").'</a>' :
                         ($step==2?'<div class="breadcrumb_divider"></div><a class="current">'.tr("INSTALL_LANGUAGE").'</a><div class="breadcrumb_divider"></div><a class="current">'.tr("INSTALL_DB_TYPE").'</a>' :
@@ -67,12 +67,12 @@ if (empty($langfile)) {
     </section>
     <aside id="sidebar" class="column">
         <ul class="toggle">
-            <li class="icn_time"><a><?=tr("TIME_SERVER");?> : <span id='ts'></span></a></li>
+            <li class="icn_time"><a><?php echo tr("TIME_SERVER");?> : <span id='ts'></span></a></li>
         </ul>
         <hr>
         <h3>Installation</h3>
         <ul>
-            <li class="icn_settings"><a><?=tr("INSTALL_VERSIONS_EXTENSIONS");?>, <?=tr("INSTALL_LANGUAGE");?></a></li>
+            <li class="icn_settings"><a><?php echo tr("INSTALL_VERSIONS_EXTENSIONS");?>, <?php echo tr("INSTALL_LANGUAGE");?></a></li>
             <?php
                 if($step==2||$step==3||$step==4) {
                     echo '<li class="icn_settings"><a>'.tr("INSTALL_DB_TYPE").'</a></li>';
@@ -723,24 +723,24 @@ if (empty($langfile)) {
             } elseif ($db_type == "oracle") {
                 die('ORACLE, ' . tr("NOT_YET_AVAILABLE"));
             }
-            if (!get_magic_quotes_gpc()) {
-                $table_prefix      = $cnx->CleanInput($table_prefix);
-                $admin_pass        = $cnx->CleanInput($admin_pass);
-                $base_url          = $cnx->CleanInput($base_url);
-                $path              = $cnx->CleanInput($path);
-                $smtp_host         = $cnx->CleanInput($smtp_host);
-                $smtp_login        = $cnx->CleanInput($smtp_login);
-                $smtp_pass         = $cnx->CleanInput($smtp_pass);
-                $smtp_port         = $cnx->CleanInput($smtp_port);
-                $sending_limit     = $cnx->CleanInput($sending_limit);
-                $validation_period = $cnx->CleanInput($validation_period);
-                $sub_validation    = $cnx->CleanInput($sub_validation);
-                $unsub_validation  = $cnx->CleanInput($unsub_validation);
-                $admin_email       = $cnx->CleanInput($admin_email);
-                $admin_name        = $cnx->CleanInput($admin_name);
-                $mod_sub           = $cnx->CleanInput($mod_sub);
-                $alert_sub         = $cnx->CleanInput($alert_sub);
-            }
+
+            $table_prefix      = $cnx->CleanInput($table_prefix);
+            $admin_pass        = $cnx->CleanInput($admin_pass);
+            $base_url          = $cnx->CleanInput($base_url);
+            $path              = $cnx->CleanInput($path);
+            $smtp_host         = $cnx->CleanInput($smtp_host);
+            $smtp_login        = $cnx->CleanInput($smtp_login);
+            $smtp_pass         = $cnx->CleanInput($smtp_pass);
+            $smtp_port         = $cnx->CleanInput($smtp_port);
+            $sending_limit     = $cnx->CleanInput($sending_limit);
+            $validation_period = $cnx->CleanInput($validation_period);
+            $sub_validation    = $cnx->CleanInput($sub_validation);
+            $unsub_validation  = $cnx->CleanInput($unsub_validation);
+            $admin_email       = $cnx->CleanInput($admin_email);
+            $admin_name        = $cnx->CleanInput($admin_name);
+            $mod_sub           = $cnx->CleanInput($mod_sub);
+            $alert_sub         = $cnx->CleanInput($alert_sub);
+
             $admin_pass = md5($admin_pass);
             $sql = "INSERT INTO " . $table_prefix . "config VALUES (
                         '$admin_pass', '30', '$base_url', '$path',
@@ -753,7 +753,7 @@ if (empty($langfile)) {
                         'utf-8', '" . $table_prefix . "track', '" . $table_prefix . "send',
                         '" . $table_prefix . "autosave', '" . $table_prefix . "send_suivi', 
                         '" . $table_prefix . "track_links', '" . $table_prefix . "upload',
-                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted','$alert_sub','1')";
+                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted','$alert_sub')";
             if($cnx->Sql($sql)){
                 echo '<h4 class="alert_success">' . tr("INSTALL_SAVE_CONFIG") . ' ' .tr("DONE").'</h4>';
             }else{
@@ -825,6 +825,6 @@ if (empty($langfile)) {
         ?>
         <div class="spacer"></div>
     </section>
-    <script type="text/javascript">$('#ts').jsclock('<?=date('H:i:s');?>');</script>
+    <script type="text/javascript">$('#ts').jsclock('<?php echo date('H:i:s');?>');</script>
 </body>
 </html>

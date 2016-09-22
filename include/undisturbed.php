@@ -52,23 +52,23 @@ if($type_serveur=='dedicated'){
         ?>
         <article class="module width_3_quarter">
         <header>
-            <h3><?=tr("UNDISTURBED_TITLE_GRPH_AND_ERROR");?></h3>
+            <h3><?php echo tr("UNDISTURBED_TITLE_GRPH_AND_ERROR");?></h3>
         </header>
         <script type="text/javascript" src="//www.amcharts.com/lib/3/amcharts.js"></script>
         <script type="text/javascript" src="//www.amcharts.com/lib/3/pie.js"></script>
         <div class="module_content">
             <fieldset>
-                <label><?=tr("UNDISTURBED_LABEL_ERROR");?></label>
+                <label><?php echo tr("UNDISTURBED_LABEL_ERROR");?></label>
                 <div id="chartdiv"></div>
             </fieldset>
             <fieldset>
-                <label><?=tr("UNDISTURBED_LABEL_CLASS");?></label>
+                <label><?php echo tr("UNDISTURBED_LABEL_CLASS");?></label>
                 <div id="chartdiv1"></div>
             </fieldset>
         </div>
         <script>
-            var chart = new AmCharts.makeChart("chartdiv", {"type": "pie","theme": "none","dataProvider": [<?=$chart_data;?>],"valueField": "value","titleField": "data","outlineAlpha": 0.4,"depth3D": 15,"balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle": 30 });
-            var chart1 = new AmCharts.makeChart("chartdiv1", {"type": "pie","theme": "none","dataProvider": [<?=$chart_bounce_data_type;?>],"valueField": "value","titleField": "type","outlineAlpha": 0.4,"depth3D": 15,"balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle": 30 });
+            var chart = new AmCharts.makeChart("chartdiv", {"type": "pie","theme": "none","dataProvider": [<?php echo $chart_data;?>],"valueField": "value","titleField": "data","outlineAlpha": 0.4,"depth3D": 15,"balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle": 30 });
+            var chart1 = new AmCharts.makeChart("chartdiv1", {"type": "pie","theme": "none","dataProvider": [<?php echo $chart_bounce_data_type;?>],"valueField": "value","titleField": "type","outlineAlpha": 0.4,"depth3D": 15,"balloonText": "[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle": 30 });
         </script>
         </article>
         <div class="spacer"></div>
@@ -77,7 +77,7 @@ if($type_serveur=='dedicated'){
     ?>
     <script type="text/javascript">
     // <![CDATA[
-    var timer = 0; var perc = 0; function updateProgress(percentage) {$('#pbar_innerdiv').css("width", percentage + "%");$('#pbar_innertext').text(percentage + "%");} function animateUpdate() {perc++;updateProgress(perc);if(perc < 100) {timer = setTimeout(animateUpdate, 1666);}} function jb(){$.ajax({url:"include/bounce.php?list_id=<?=intval($list_id);?>&token=<?=$token;?>",dataType: 'html',success:function(data){$('#jb').html(data);}});perc = 0;animateUpdate();setTimeout(jb,60000);}jb();
+    var timer = 0; var perc = 0; function updateProgress(percentage) {$('#pbar_innerdiv').css("width", percentage + "%");$('#pbar_innertext').text(percentage + "%");} function animateUpdate() {perc++;updateProgress(perc);if(perc < 100) {timer = setTimeout(animateUpdate, 1666);}} function jb(){$.ajax({url:"include/bounce.php?list_id=<?php echo intval($list_id);?>&token=<?php echo $token;?>",dataType: 'html',success:function(data){$('#jb').html(data);}});perc = 0;animateUpdate();setTimeout(jb,60000);}jb();
     // ]]>
     </script>
     <?php

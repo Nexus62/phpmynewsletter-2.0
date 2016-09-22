@@ -854,13 +854,7 @@ class CwsMailBounceHandler
         }
         
         // required options for imap_open connection.
-        $opts = '';
-        if ( $this->service != '' ) {
-            $opts .= '/' . $this->service;
-        }
-        if ( $this->service_option != '' ) {
-            $opts .= '/' .$this->service_option;
-        }
+        $opts = '/' . $this->service . '/' . $this->service_option;
         if ($this->service_option == 'tls' || $this->service_option == 'ssl') {
             $opts .= '/' . $this->cert;
         }
