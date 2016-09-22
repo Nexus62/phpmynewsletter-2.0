@@ -1073,7 +1073,7 @@ function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth 
     return true;
 }
 function tok_gen($name = ''){
-    session_start();
+    @session_start();
     if (function_exists("hash_algos") and in_array("sha512",hash_algos())){
         $token=hash("sha512",mt_rand(0,mt_getrandmax()));
     }else{
@@ -1093,9 +1093,9 @@ function tok_gen($name = ''){
     return $token;
 }
 function tok_val($token){
-    $temps_de_connexion = 9999;
     @session_start();
-    $tok = true;
+    $temps_de_connexion = 9999;
+    $tok = false;
     if(isset($_SESSION['_token'])&&isset($_SESSION['_token_time'])&&isset($token)&&!empty(trim($token))){
         if($_SESSION['_token'] == $token){
             if($_SESSION['_token_time'] >= (time() - $temps_de_connexion)){

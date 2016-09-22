@@ -4,8 +4,7 @@ if(!file_exists("include/config.php")) {
     exit;
 } else {
     include("_loader.php");
-    $token=(empty($_POST['token'])?"":$_POST['token']);
-    if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token']);
+    if(isset($_POST['token'])){$token=$_POST['token'];}elseif(isset($_GET['token'])){$token=$_GET['token'];}else{$token='';}
     if(!tok_val($token)){
         header("Location:login.php?error=2");
         exit;
@@ -21,11 +20,6 @@ if($r != 'SUCCESS') {
 }
 if(empty($row_config_globale['language']))$row_config_globale['language']="english";
 include("include/lang/".$row_config_globale['language'].".php");
-$form_pass = (empty($_POST['form_pass']) ? "" : $_POST['form_pass']);
-if (!checkAdminAccess($row_config_globale['admin_pass'], $form_pass)) {
-    header("Location:index.php");
-    exit();
-}
 $id_mail = (!empty($_GET['id_mail'])) ? intval($_GET['id_mail']) : '';
 $list_id = (!empty($_GET['list_id'])) ? intval($_GET['list_id']) : '';
 if(empty($id_mail)&&empty($list_id)){

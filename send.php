@@ -1,5 +1,4 @@
 <?php
-session_start();
 header('Access-Control-Allow-Origin: *');
 header('Cache-Control: no-cache, must-revalidate');
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
@@ -8,11 +7,12 @@ if(!file_exists("include/config.php")) {
     header("Location:install.php");
     exit;
 } else {
+    session_start();
     include("_loader.php");
-    $token=(empty($_POST['token'])?"":$_POST['token']);
-    if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token']);
+    if(isset($_POST['token'])){$token=$_POST['token'];}elseif(isset($_GET['token'])){$token=$_GET['token'];}else{$token='';}
     if(!tok_val($token)){
         quick_Exit();
+        die();
     }
 }
 $cnx->query("SET NAMES UTF8");
@@ -26,10 +26,6 @@ if($r != 'SUCCESS') {
 }
 if(empty($row_config_globale['language']))$row_config_globale['language']="english";
 include("include/lang/".$row_config_globale['language'].".php");
-$form_pass = (empty($_POST['form_pass']) ? "" : $_POST['form_pass']);
-if (!checkAdminAccess($row_config_globale['admin_pass'], $form_pass)) {
-    quick_Exit();
-}
 require('include/lib/PHPMailerAutoload.php');
 require('include/lib/Html2Text.php');
 $step    = (empty($_GET['step']) ? "" : $_GET['step']);

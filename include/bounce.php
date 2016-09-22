@@ -7,9 +7,9 @@ if(!file_exists("config.php")) {
     header("Location:install.php");
     exit;
 } else {
+    session_start();
     include("../_loader.php");
-    $token=($_POST['token']!=""?"":$_POST['token']);
-    if(!isset($token) || (isset($token)&&$token==""))$token=($_GET['token']!=""?"":$_GET['token']);
+    if(isset($_POST['token'])){$token=$_POST['token'];}elseif(isset($_GET['token'])){$token=$_GET['token'];}else{$token='';}
     if(!tok_val($token)){
         header("Location:../login.php?error=2");
         die();
