@@ -1096,7 +1096,8 @@ function tok_val($token){
     @session_start();
     $temps_de_connexion = 9999;
     $tok = false;
-    if(isset($_SESSION['_token'])&&isset($_SESSION['_token_time'])&&isset($token)&&!empty(trim($token))){
+    $trimToken = trim($token);
+    if(isset($_SESSION['_token'])&&isset($_SESSION['_token_time'])&&isset($token)&&!empty($trimToken)){
         if($_SESSION['_token'] == $token){
             if($_SESSION['_token_time'] >= (time() - $temps_de_connexion)){
                 $_SESSION['_token_time'] = time();
