@@ -134,7 +134,7 @@ switch ($step) {
                         . tr("UNSUBSCRIBE_LINK", "<a href='" . $row_config_globale['base_url'] . $row_config_globale['path'] 
                         . "subscription.php?i=$msg_id&list_id=$list_id&op=leave&email_addr=" . $addr 
                         . "&h=fake_hash' style='' target='_blank'>")
-                        . "<br /><a href='http://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
+                        . "<br /><a href='https://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
         } else {
             $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url'].$row_config_globale['path']
                   ."online.php?i=$msg_id&list_id=$list_id&email_addr=".$addr."&h=fake_hash'>")."<br />";
