@@ -2,18 +2,6 @@
 session_start();
 include("_loader.php");
 require 'include/lib/PHPMailerAutoload.php';
-if (!function_exists('iconv') && function_exists('libiconv')) {
-    function iconv($input_encoding, $output_encoding, $string) {
-        return libiconv($input_encoding, $output_encoding, $string);
-    }
-}
-if (!function_exists('iconv') && !function_exists('libiconv')) {
-    include_once("include/lib/ConvertCharset.class.php");
-    function iconv($input_encoding, $output_encoding, $string) {
-        $converter = new ConvertCharset();
-        return $converter->Convert($string, $input_encoding, $output_encoding);
-    }
-}
 $cnx->query("SET NAMES UTF8");
 $row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
 include("include/lang/" . $row_config_globale['language'] . ".php");
@@ -41,7 +29,7 @@ if ($op == "leave" && !$row_config_globale['unsub_validation']) {
 $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
 ?>
 <!DOCTYPE HTML>
-<html lang="fr">
+<html lang="<?php echo tr("LN");?>">
     <head>
         <meta charset="utf-8" />
         <title><?php echo tr("NEWSLETTER_TITLE");?></title>
@@ -70,8 +58,8 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                             echo '<form method="post" action="">
                                     <div class="module_content">
                                         <fieldset>
-                                            <label> :</label>
-                                            <label><img src="c.php" />' . tr("SUBSCRIPTION_CAPTCHA") . '</label>
+                                            <label>' . tr("SUBSCRIPTION_CAPTCHA") . ' : </label><br />
+                                            <div align="center"><img src="c.php" /></div>
                                             <input type="text" name="c" value="" />
                                             <input type="hidden" name="email_addr" value="'.$email_addr.'" />
                                             <input type="hidden" name="list_id" value="'.$list_id.'" />
@@ -93,7 +81,28 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                                     $body .= "<a href='".$row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?op=confirm_join&email_addr=" . urlencode($email_addr) . "&hash=$add&list_id=$list_id'>" . tr("SUBSCRIPTION_I_SUB") . "</a>";
                                     $subj = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $news['subscription_subject'] : iconv("UTF-8", $row_config_globale['charset'], $news['subscription_subject']));
                                     $body = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $body : iconv("UTF-8", $row_config_globale['charset'], $body));
-                                    sendEmail($row_config_globale['sending_method'], $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                                    if($row_config_globale['sending_method']=='lbsmtp') {
+                                        $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                        FROM ".$row_config_globale['table_smtp']." 
+                                                            WHERE smtp_used < smtp_limite
+                                                                AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                        ORDER BY id_use ASC LIMIT 1");
+                                        if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                            $auth=1;
+                                        } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                            $auth=0;
+                                        }
+                                        sendEmail('lbsmtp', $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                                  $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                                  $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                        $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                        SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                                     WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                                    } else {
+                                        sendEmail($row_config_globale['sending_method'], $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                                  $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], 
+                                                  $row_config_globale['charset']);
+                                    }
                                     echo "<h4 class='alert_success'>" . tr("SUBSCRIPTION_SEND_CONFIRM_MESSAGE") . "</h4>";
                                 } elseif ($add ==0)
                                     echo "<h4 class='alert_error'>" . tr("SUBSCRIPTION_ALREADY_SUBSCRIBER") . "</h4>";
@@ -121,9 +130,29 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                             $body .= "<a href='".$row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?op=confirm_leave&email_addr=" . urlencode($email_addr) . "&hash=$hash&list_id=$list_id&i=$i'>".tr("SUBSCRIPTION_UN_SUB")."</a>";
                             $subj = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $news['quit_subject'] : iconv("UTF-8", $row_config_globale['charset'], $news['quit_subject']));
                             $body = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $body : iconv("UTF-8", $row_config_globale['charset'], $body));
-                            if (sendEmail($row_config_globale['sending_method'],$email_addr,$news['from_addr'],$news['from_name'],$subj,
-                                $body,$row_config_globale['smtp_auth'],$row_config_globale['smtp_host'],$row_config_globale['smtp_login'],
-                                $row_config_globale['smtp_pass'],$row_config_globale['charset'])){
+                            if($row_config_globale['sending_method']=='lbsmtp') {
+                                $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                FROM ".$row_config_globale['table_smtp']." 
+                                                    WHERE smtp_used < smtp_limite
+                                                        AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                ORDER BY id_use ASC LIMIT 1");
+                                if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                    $auth=1;
+                                } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                    $auth=0;
+                                }
+                                $sdmtst = sendEmail('lbsmtp', $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                          $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                          $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                             WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                            } else {
+                                $sdmtst = sendEmail($row_config_globale['sending_method'], $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                          $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], 
+                                          $row_config_globale['charset']);
+                            }
+                            if ($sdmtst){
                                 echo "<h4 class='alert_success'>" . tr("SUBSCRIPTION_SEND_CONFIRM_MESSAGE") . "</h4>";
                             } else {
                                 echo "<h4 class='alert_error'>" . tr("ERROR_SENDING_CONFIRM_MAIL") . "</h4>";
@@ -145,10 +174,31 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                             $body .= "<a href='".$row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?op=confirm_leave&email_addr=" . urlencode($email_addr) . "&hash=$hash&list_id=$list_id'>".tr("SUBSCRIPTION_AGREE_UN_SUB")."</a>";
                             $subj = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $news['welcome_subject'] : iconv("UTF-8", $row_config_globale['charset'], $news['welcome_subject']));
                             $body = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $body : iconv("UTF-8", $row_config_globale['charset'], $body));
-                            sendEmail($row_config_globale['sending_method'], $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                            if($row_config_globale['sending_method']=='lbsmtp') {
+                                $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                FROM ".$row_config_globale['table_smtp']." 
+                                                    WHERE smtp_used < smtp_limite
+                                                        AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                ORDER BY id_use ASC LIMIT 1");
+                                if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                    $auth=1;
+                                } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                    $auth=0;
+                                }
+                                sendEmail('lbsmtp', $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                          $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                          $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                             WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                            } else {
+                                sendEmail($row_config_globale['sending_method'], $email_addr, $news['from_addr'], $news['from_name'], $subj, $body,
+                                          $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'],
+                                          $row_config_globale['charset']);
+                            }
                             echo "<h4 class='alert_success'>" . tr("SUBSCRIPTION_FINISHED") . "</h4>";
                             if($row_config_globale['alert_sub']==1){
-							    $rapport_sujet = tr("SUBSCRIPTION_TITLE");
+                                $rapport_sujet = tr("SUBSCRIPTION_TITLE");
                                 $subj = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $rapport_sujet : iconv("UTF-8", $row_config_globale['charset'], $rapport_sujet));
                                 $rapport = '<br /><br /><br /><br /><br />
                                 <table style="height: 217px; margin-left: auto; margin-right: auto;" width="660">
@@ -161,7 +211,28 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                                     <td><span style="color: #2446a2;">'.$email_addr.'</td></tr>
                                 </tbody>
                                 </table>';
-                                sendEmail($row_config_globale['sending_method'],$row_config_globale['admin_email'], $row_config_globale['admin_email'], $row_config_globale['admin_name'], $subj, $rapport, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                                if($row_config_globale['sending_method']=='lbsmtp') {
+                                    $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                    FROM ".$row_config_globale['table_smtp']." 
+                                                        WHERE smtp_used < smtp_limite
+                                                            AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                    ORDER BY id_use ASC LIMIT 1");
+                                    if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                        $auth=1;
+                                    } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                        $auth=0;
+                                    }
+                                    sendEmail('lbsmtp', $row_config_globale['admin_email'], $row_config_globale['admin_email'], $row_config_globale['admin_email'], $subj, $rapport, 
+                                              $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                              $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                    $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                    SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                                 WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                                } else {
+                                    sendEmail($row_config_globale['sending_method'], $row_config_globale['admin_email'], $row_config_globale['admin_email'], $row_config_globale['admin_email'], $subj, $rapport, 
+                                              $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], 
+                                              $row_config_globale['charset']);
+                                }
                             }
                         } else {
                             echo "<h4 class='alert_error'>" . tr("ERROR_UNKNOWN") . "</h4>";
@@ -172,7 +243,29 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                     case "confirm_leave":
                         echo '<header><h3>'.tr("SUBSCRIPTION_TITLE").'</h3></header>';
                         $rm = removeSubscriber($cnx, $row_config_globale['table_email'], $row_config_globale['table_send'], $list_id, $email_addr, $hash, $i,$row_config_globale['table_email_deleted']);
-                        sendEmail($row_config_globale['sending_method'],$news['from_addr'],$news['from_addr'], $news['from_name'], 'Désinscription', 'Liste : '.$list_id.'<b />Désinscrit : '.$email_addr, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                        if($row_config_globale['sending_method']=='lbsmtp') {
+                            $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                            FROM ".$row_config_globale['table_smtp']." 
+                                                WHERE smtp_used < smtp_limite
+                                                    AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                            ORDER BY id_use ASC LIMIT 1");
+                            if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                $auth=1;
+                            } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                $auth=0;
+                            }
+                            sendEmail('lbsmtp', $news['from_addr'],$news['from_addr'], $news['from_name'], tr("UNSUBSCRIPTION_TITLE"), 
+                                      tr("LIST") . ' : '.$list_id.'<br />'. tr("UNSUBSCRIPTION_TITLE") . ' : ' . $email_addr,
+                                      $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                      $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                            $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                            SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                         WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                        } else {
+                            sendEmail($row_config_globale['sending_method'],$news['from_addr'],$news['from_addr'], $news['from_name'], tr("UNSUBSCRIPTION_TITLE") , 
+                                      tr("LIST") . ' : '.$list_id.'<br />' . tr("UNSUBSCRIPTION_TITLE") . ' : ' . $email_addr, 
+                                      $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                        }
                         if ($rm == 1) {
                             echo "<h4 class='alert_success'>" . tr("UNSUBSCRIPTION_FINISHED") . ".</h4>";
                         } else if ($rm == -1) {
@@ -190,13 +283,35 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                             if($add){
                                 $body = $news['welcome_body'];
                                 $body .= "\n\n" . tr("UNSUBSCRIPTION_MAIL_BODY") . ":\n";
-                                $body .= "<a href='".$row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?op=confirm_leave&email_addr=" . urlencode($email_addr) . "&hash=$add&list_id=$list_id'>".tr("SUBSCRIPTION_UN_SUB")."</a>";
+                                $body .= "<a href='".$row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?op=confirm_leave&email_addr=" 
+                                      . urlencode($email_addr) . "&hash=$add&list_id=$list_id'>".tr("SUBSCRIPTION_UN_SUB")."</a>";
                                 $subj = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $news['welcome_subject'] : iconv("UTF-8", $row_config_globale['charset'], $news['welcome_subject']));
                                 $body = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $body : iconv("UTF-8", $row_config_globale['charset'], $body));
-                                sendEmail($row_config_globale['sending_method'],$email_addr,$news['from_addr'], $news['from_name'], $subj, $body, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                                if($row_config_globale['sending_method']=='lbsmtp') {
+                                    $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                    FROM ".$row_config_globale['table_smtp']." 
+                                                        WHERE smtp_used < smtp_limite
+                                                            AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                    ORDER BY id_use ASC LIMIT 1");
+                                    if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                        $auth=1;
+                                    } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                        $auth=0;
+                                    }
+                                    sendEmail('lbsmtp', $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                              $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                              $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                    $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                    SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                                 WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                                } else {
+                                    sendEmail($row_config_globale['sending_method'],$email_addr,$news['from_addr'], $news['from_name'], $subj, $body, 
+                                              $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], 
+                                              $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                                }
                                 echo "<h4 class='alert_success'>" . tr("SUBSCRIPTION_FINISHED") . "</h4>";
                                 if($row_config_globale['alert_sub']==1){
-							        $rapport_sujet = tr("SUBSCRIPTION_TITLE");
+                                    $rapport_sujet = tr("SUBSCRIPTION_TITLE");
                                     $subj = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $rapport_sujet : iconv("UTF-8", $row_config_globale['charset'], $rapport_sujet));
                                     $rapport = '<br /><br /><br /><br /><br />
                                     <table style="height: 217px; margin-left: auto; margin-right: auto;" width="660">
@@ -209,7 +324,28 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                                         <td><span style="color: #2446a2;">'.$email_addr.'</td></tr>
                                     </tbody>
                                     </table>';
-                                    sendEmail($row_config_globale['sending_method'],$row_config_globale['admin_email'], $row_config_globale['admin_email'], $row_config_globale['admin_name'], $subj, $rapport, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                                    if($row_config_globale['sending_method']=='lbsmtp') {
+                                        $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                        FROM ".$row_config_globale['table_smtp']." 
+                                                            WHERE smtp_used < smtp_limite
+                                                                AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                        ORDER BY id_use ASC LIMIT 1");
+                                        if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                            $auth=1;
+                                        } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                            $auth=0;
+                                        }
+                                        sendEmail('lbsmtp', $row_config_globale['admin_email'], $row_config_globale['admin_email'], $row_config_globale['admin_email'], $subj, $rapport, 
+                                                  $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                                  $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                        $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                        SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                                     WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                                    } else {
+                                        sendEmail($row_config_globale['sending_method'],$row_config_globale['admin_email'], $row_config_globale['admin_email'], $row_config_globale['admin_name'], $subj, $rapport, 
+                                              $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], 
+                                              $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                                    }
                                 }
                                 echo "<h4 class='alert_success'>" . tr("SUBSCRIPTION_FINISHED") . "</h4>";
                             } else {
@@ -223,7 +359,58 @@ $news = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
                         echo '<header><h3>'.tr("UNSUBSCRIPTION_TITLE").'</h3></header>';
                         if (!$row_config_globale['unsub_validation']) {
                             $rm = removeSubscriberDirect($cnx, $row_config_globale['table_email'], $list_id, $email_addr, $row_config_globale['table_email_deleted']);
-                            sendEmail($row_config_globale['sending_method'],$news['from_addr'],$news['from_addr'], $news['from_name'], 'Désinscription', 'Liste : '.$list_id.'<b />Désinscrit : '.$email_addr, $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                            if($row_config_globale['sending_method']=='lbsmtp') {
+                                $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                FROM ".$row_config_globale['table_smtp']." 
+                                                    WHERE smtp_used < smtp_limite
+                                                        AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                ORDER BY id_use ASC LIMIT 1");
+                                if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                    $auth=1;
+                                } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                    $auth=0;
+                                }
+                                sendEmail('lbsmtp', $news['from_addr'],$news['from_addr'], $news['from_name'],
+                                          tr("NEWSLETTER_UNSUBSCRIPTION"), tr("LIST") . ' : '.$list_id.'<br />' . tr("UNSUBSCRIPTION_TITLE") . ' : '.$email_addr, 
+                                          $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                          $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                             WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                            } else {
+                                sendEmail($row_config_globale['sending_method'], $news['from_addr'], $news['from_addr'], $news['from_name'], 
+                                      tr("NEWSLETTER_UNSUBSCRIPTION"), tr("LIST") . ' : '.$list_id.'<br />' . tr("UNSUBSCRIPTION_TITLE") . ' : '.$email_addr, 
+                                      $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], 
+                                      $row_config_globale['smtp_pass'], $row_config_globale['charset']);
+                            }
+                            $body = $news['quit_body'];
+                            $body .= "\n\n" . tr("UNSUBSCRIPTION_MAIL_BODY") . " :\n";
+                            $body .= "<a href='".$row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?op=confirm_leave&email_addr=" . urlencode($email_addr) . "&hash=$hash&list_id=$list_id&i=$i'>".tr("SUBSCRIPTION_UN_SUB")."</a>";
+                            $subj = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $news['quit_subject'] : iconv("UTF-8", $row_config_globale['charset'], $news['quit_subject']));
+                            $body = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $body : iconv("UTF-8", $row_config_globale['charset'], $body));
+                            if($row_config_globale['sending_method']=='lbsmtp') {
+                                $info_smtp_lb = $cnx->SqlRow("SELECT * 
+                                                FROM ".$row_config_globale['table_smtp']." 
+                                                    WHERE smtp_used < smtp_limite
+                                                        AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+                                                ORDER BY id_use ASC LIMIT 1");
+                                if($info_smtp_lb['smtp_user']!=''||$info_smtp_lb['smtp_pass']!='') {
+                                    $auth=1;
+                                } elseif($info_smtp_lb['smtp_user']==''&&$info_smtp_lb['smtp_pass']=='') {
+                                    $auth=0;
+                                }
+                                $sdmtst = sendEmail('lbsmtp', $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                          $auth, $info_smtp_lb['smtp_url'], $info_smtp_lb['smtp_user'], $info_smtp_lb['smtp_pass'], 
+                                          $row_config_globale['charset'], $info_smtp_lb['smtp_secure'], $info_smtp_lb['smtp_port']);
+                                $cnx->query('UPDATE '.$row_config_globale['table_smtp'].' 
+                                                SET smtp_used=smtp_used+1, id_use=' . (intval($CURRENT_ID)+1) . '
+                                             WHERE smtp_id='.$info_smtp_lb['smtp_id']);
+                            } else {
+                                $sdmtst = sendEmail($row_config_globale['sending_method'], $email_addr, $news['from_addr'], $news['from_name'], $subj, $body, 
+                                          $row_config_globale['smtp_auth'], $row_config_globale['smtp_host'], $row_config_globale['smtp_login'], $row_config_globale['smtp_pass'], 
+                                          $row_config_globale['charset']);
+                            }
+                            
                             if ($rm) {
                                 echo "<h4 class='alert_success'>" . tr("UNSUBSCRIPTION_FINISHED") . ".</h4>";
                             } else if ($rm == -1) {
