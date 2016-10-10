@@ -8,7 +8,7 @@ Don't use if you don't know what you do ! Just for dev !!!
   - Schedule task to send newsletter
   - Easy attachment to send (one or more !)
   - Full rewrite of the portal
-  - mailqueue management (* : http://www.phpmynewsletter.com/forum/viewtopic.php?id=93)
+  - mailqueue management (* : https://www.phpmynewsletter.com/forum/viewtopic.php?id=93)
   - Correction bugs
   - Rewrite chart for tracking
   - Captcha for suscriber (opt-in)
@@ -28,21 +28,21 @@ Send mails, add attachment, manage bounce and track clicked links.
 
 # SCREENSHOT, PREVIEW
 the new version of phpmynewsletter
-![Full preview](http://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_full_page.png)
+![Full preview](https://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_full_page.png)
 
-![Bounce Management](http://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_bounce_type_soft_hard_live.png)
+![Bounce Management](https://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_bounce_type_soft_hard_live.png)
 
-![Tracking clicked links](http://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_clicked_links.png)
+![Tracking clicked links](https://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_clicked_links.png)
 
-![Easy writing and composition, auto-save](http://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_easy_redaction_auto_save.png)
+![Easy writing and composition, auto-save](https://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_easy_redaction_auto_save.png)
 
-![Global tracking](http://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_tracking.png)
+![Global tracking](https://blog.aulica-conseil.com/wp-content/uploads/2014/09/PhpMyNewsLetter_tracking.png)
 
 # INSTALLATION
 Download zip, unzip in a folder, go to install.php in your browser, complete fields and questions, enjoy !
 
 # SUPPORT
-Official support on the forum, please go to http://www.phpmynewsletter.com/forum/ or tickets for bugs and support.
+Official support on the forum, please go to https://www.phpmynewsletter.com/forum/ or tickets for bugs and support.
 
 # Roadmap for next version, TODO 2.0.4
 - Complete translations
