@@ -45,7 +45,7 @@ if (empty($langfile)) {
     <header id="header">
         <hgroup>
             <h1 class="site_title"><a href="http://www.phpmynewsletter.com">PhpMyNewsLetter</a></h1>
-            <h2 class="section_title"><?php echo tr("INSTALL_TITLE") . " " . $step . "/4";?></h2><div class="btn_view_site"><a href="http://www.phpmynewsletter.com/forum/" target="_blank"><?php echo tr("SUPPORT");?></a></div>
+            <h2 class="section_title"><?php echo tr("INSTALL_TITLE") . " " . $step . "/4";?></h2><div class="btn_view_site"><a href="https://www.phpmynewsletter.com/forum/" target="_blank"><?php echo tr("SUPPORT");?></a></div>
         </hgroup>
     </header>
     <section id="secondary_bar">
