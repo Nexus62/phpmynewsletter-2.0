@@ -1142,11 +1142,9 @@ function UpdateEmailError($cnx,$table_email,$list_id,$email,$status,$type,$categ
                                     '".($cnx->CleanInput($categorie))."','".($cnx->CleanInput($short_desc))."',
                                     '".($cnx->CleanInput($long_desc))."','".($cnx->CleanInput($campaign_id))."'
                                 FROM ".$table_email."
-                                    WHERE email = '".($cnx->CleanInput($email))."' 
-                                        AND list_id='".($cnx->CleanInput($list_id))."'")){
+                                    WHERE email = '".($cnx->CleanInput($email))."'")){
             if ($cnx->query("DELETE FROM ".$table_email." 
-                                WHERE list_id = '".($cnx->CleanInput($list_id))."' 
-                                    AND email='".($cnx->CleanInput($email))."'")) {
+                                WHERE email='".($cnx->CleanInput($email))."'")) {
                 if ($cnx->query("UPDATE $table_send 
                                     SET error=error+1 
                                         WHERE id_mail='".($cnx->CleanInput($campaign_id))."'")){
