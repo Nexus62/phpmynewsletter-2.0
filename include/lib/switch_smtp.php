@@ -9,9 +9,6 @@ Please, don't touch after this line, or phpmynewsletter won't work anymore.
 if(!isset($send_method)){
     $send_method = $row_config_globale['sending_method'];
 }
-/* 
-on réinitialise les compteurs de load_balancing si on a un $row_config_globale['sending_method']=lbsmtp :
-*/
 if($row_config_globale['sending_method']=='lbsmtp'){
     $cnx->query("UPDATE ".$row_config_globale['table_smtp']." 
         SET smtp_date_update=NOW(),smtp_used=0 
@@ -33,11 +30,12 @@ switch ($send_method) {
         }
         break;
     case 'lbsmtp':
-        $CURRENT_ID = @current($cnx->query("SELECT MAX( id_use ) AS CURRENT_ID FROM ".$row_config_globale['table_smtp'])->fetch());
+        $CURRENT_ID = @current($cnx->query("SELECT MAX( id_use ) AS CURRENT_ID 
+            FROM ".$row_config_globale['table_smtp'])->fetch());
         $info_smtp_lb = $cnx->SqlRow("SELECT * 
             FROM ".$row_config_globale['table_smtp']." 
-                WHERE smtp_used < smtp_limite                                /* quota disponible    */
-                AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY) /* moins de 24 heures  */
+                WHERE smtp_used < smtp_limite
+                AND smtp_date_update > DATE_SUB(CURDATE(), INTERVAL 1 DAY)
             ORDER BY id_use ASC LIMIT 1");
         $mail->IsSMTP();
         if($info_smtp_lb['smtp_user']!=''){
