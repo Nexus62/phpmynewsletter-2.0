@@ -966,7 +966,9 @@ function saveModele($cnx,$list_id,$table_listsconfig,$newsletter_name,$from,$fro
         return false;
     }
 }
-function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth = 0, $smtp_host = '', $smtp_login = '', $smtp_pass = '', $charset = 'UTF-8') {
+function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth = 0, 
+                   $smtp_host = '', $smtp_login = '', $smtp_pass = '', $charset = 'UTF-8',
+                   $secure = '', $port ='') {
     $mail          = new phpmailer();
     $mail->CharSet = $charset;
     $mail->PluginDir = "include/lib/";
@@ -978,6 +980,7 @@ function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth 
             )
         );
     switch ($send_method) {
+        case 'lbsmtp':
         case "smtp":
             $mail->IsSMTP();
             $mail->Host = $smtp_host;
@@ -986,8 +989,17 @@ function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth 
                 $mail->Username = $smtp_login;
                 $mail->Password = $smtp_pass;
             }
+            if ($secure != '') {
+                $mail->SMTPSecure = $secure;
+            }
+            if ($port != '') {
+                $mail->Port = (int)$port;
+            } else {
+                $mail->Port = 25;
+            }
             break;
         case "smtp_gmail":
+        case "smtp_gmail_tls":
             $mail->IsSMTP();
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = 'tls';
@@ -996,7 +1008,18 @@ function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth 
             $mail->Username = $smtp_login;
             $mail->Password = $smtp_pass;
             break;
+        case "smtp_gmail_ssl":
+            $mail->IsSMTP();
+            $mail->SMTPAuth = true;
+            $mail->SMTPSecure = 'ssl';
+            $mail->Host = "smtp.gmail.com";
+            $mail->Port = 465;
+            $mail->IsHTML(true);
+            $mail->Username = $smtp_login;
+            $mail->Password = $smtp_pass;
+            break;
         case "php_mail":
+        case "php_mail_infomaniak":
             $mail->IsMail();
             break;
         case "smtp_mutu_ovh":
@@ -1055,6 +1078,24 @@ function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth 
                 $mail->Username = $smtp_login;
                 $mail->Password = $smtp_pass;
             }
+            break;
+        case "smtp_one_com":
+            $mail->IsSMTP();
+            $mail->SMTPAuth = false;
+            $mail->Port = 25;
+            $mail->Host = 'mailout.one.com';
+            break;
+        case "smtp_one_com_ssl":
+            require_once(__DIR__.'/class.pop3.php');
+            $pop = new POP3();
+            $pop->Authorise("send.one.com", 465, 30, $smtp_login, $smtp_pass, 1);
+            $mail->IsSMTP();
+            $mail->SMTPAuth = true;
+            $mail->Port = 465;
+            $mail->SMTPSecure = 'ssl';
+            $mail->Host = 'send.one.com';
+            $mail->Username = $smtp_login;
+            $mail->Password = $smtp_pass;
             break;
         default:
             die(tr("NO_SEND_DEFINITION"));
