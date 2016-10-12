@@ -94,7 +94,7 @@ if (!empty($msg_id) && empty($action)) {
                                 }
                             }
                         });
-                        setTimeout(progresspump,5000); // 10000
+                        setTimeout(progresspump,10000);
                     }progresspump();});
             });
         </script>
