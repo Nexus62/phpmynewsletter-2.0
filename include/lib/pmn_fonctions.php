@@ -181,7 +181,7 @@ function createNewsletter($cnx,$table_listsconfig,$newsletter_name,$from,
                               $from_name,$subject,$header,$footer, 
                               $subscription_subject,$subscription_body,
                               $welcome_subject,$welcome_body,$quit_subject,$quit_body,$preview_addr) {
-    $cnx->query("SET NAMES UTF8");                          
+    $cnx->query("SET NAMES UTF8");                        
     $sql = "SELECT list_id FROM $table_listsconfig ORDER BY list_id DESC";
     $newidTab = $cnx->SqlRow($sql);
     $newid = $newidTab['list_id'] + 1;
@@ -1101,12 +1101,17 @@ function sendEmail($send_method, $to, $from, $from_name, $subject, $body, $auth 
             die(tr("NO_SEND_DEFINITION"));
             break;
     }
+    $mail->ClearAllRecipients();
+    $mail->ClearCustomHeaders();
     $mail->IsHTML(true);
     $mail->From     = $from;
     $mail->FromName = $from_name;
-    $mail->AddAddress($to);   
+    $mail->AddAddress($to);
+    $mail->XMailer = ' ';
     $mail->Subject = $subject;
     $mail->Body    = $body;
+    $AltBody = new \Html2Text\Html2Text($body);
+    $mail->AltBody = quoted_printable_encode($AltBody->getText());
     if (!$mail->Send()) {
         echo $mail->ErrorInfo;
         return -2;
