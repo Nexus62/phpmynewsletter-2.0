@@ -40,6 +40,7 @@ switch($op){
                 <input type='text' name='subject' value=\"".  stripslashes($subject)  
                 . "\" size='50' maxlength='255' id='subject' />&nbsp;<span id='chars'>78</span>
                 <br><br>".tr("COMPOSE_MSG_BODY")." :";
+            /*
             if($ft=="") {
                 echo " (<a href='".$_SERVER['PHP_SELF']
                     . "?page=compose&token=$token&list_id=$list_id&ft=else'>".tr("CLICK_TO_COMPOSE_HTML")."</a>)<br><br>";
@@ -47,6 +48,7 @@ switch($op){
                 echo " (<a href='".$_SERVER['PHP_SELF']
                     . "?page=compose&token=$token&list_id=$list_id'>".tr("CLICK_TO_COMPOSE_WITH_EDITOR")."</a>)<br><br>";
             }
+            */
             echo "<textarea name='message' id='redac' rows='20' cols='70'>".   stripslashes($textarea)  ."</textarea>";
             echo "<div id='as'><h4 class='alert_info'>".tr("START_INITIALISATION")."...</h4></div><br>&nbsp;</article>";
             echo '<article class="module width_quarter"><div class="sticky-scroll-box">';
@@ -75,18 +77,17 @@ switch($op){
                 echo "<script src='/".$row_config_globale['path']."js/tinymce/tinymce.min.js'></script>
                     <script>
                     tinymce.init({
-                        selector: 'textarea#redac',
-                        theme: 'modern',
-                        forced_root_block : false,
-                        force_br_newlines : true,
-                        force_p_newlines : false,
-                        plugins: [
-                            'advlist autolink lists link image charmap print preview anchor',
-                            'searchreplace visualblocks code fullscreen textcolor emoticons',
-                            'insertdatetime media table contextmenu paste filemanager colorpicker template'
+                        selector : 'textarea#redac',
+                        plugins : [
+                            'fullscreen fullpage visualblocks, preview searchreplace print insertdatetime hr',
+                            'charmap colorpicker anchor code link image paste pagebreak table contextmenu',
+                            'filemanager table code media autoresize textcolor emoticons'
                         ],
-                        toolbar1: 'insertfile undo redo | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
-                        toolbar2: 'styleselect | fontselect fontsizeselect | emoticons | link image | filemanager | template',
+                        /*toolbar1 : 'insertfile undo redo | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+                        toolbar2 : 'styleselect | fontselect fontsizeselect | emoticons | link image | filemanager | template',*/
+                        toolbar1 : 'newdocument,print,|,bold,italic,underline,|,strikethrough,superscript,subscript,|,forecolor,colorpicker,backcolor,|,bullist,numlist,outdent,indent,|,visualchars,visualblocks,|,charmap,|,hr,',
+                        toolbar2 : 'table,|,cut,copy,paste,searchreplace,|,blockquote,|,undo,redo,|,link,unlink,anchor,|,image,emoticons,media,|,inserttime,|,preview,fullscreen,code,',
+                        toolbar3 : 'styleselect,|,formatselect,|,fontselect,|,fontsizeselect,',
                         style_formats: [
                             {title: 'Open Sans', inline: 'span', styles: { 'font-family':'Open Sans'}},
                             {title: 'Arial', inline: 'span', styles: { 'font-family':'arial'}},
@@ -107,17 +108,40 @@ switch($op){
                             {title: 'Hero',url: '/".$row_config_globale['path']."js/tinymce/templates/hero.html',description: 'MODULE EN TEST !'},
                             {title: 'Newsletter',url: '/".$row_config_globale['path']."js/tinymce/templates/newsletter.html',description: 'MODULE EN TEST !'}
                         ],
-                        relative_urls: false,
-                        remove_script_host: false,
-                        language : '".tr("TINYMCE_LANGUAGE")."',
-                        image_advtab: true ,
+                        cleanup : true,
+                        cleanup_on_startup : true,
+                        convert_urls : true,
+                        custom_undo_redo_levels : 20,
+                        doctype : '<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">',
+                        entity_encoding : 'raw',
                         external_filemanager_path:'/".$row_config_globale['path']."js/tinymce/plugins/filemanager/',
-                        filemanager_title:'Responsive Filemanager' ,
                         external_plugins: { 'filemanager' : '/".$row_config_globale['path']."js/tinymce/plugins/filemanager/plugin.min.js'},
-                        extended_valid_elements: 'style',
-                        custom_elements: 'style',
+                        extended_valid_elements: 'pre[*],style[*]',
+                        filemanager_title:'Responsive Filemanager' ,
+                        fontsize_formats : '8px 9px 10px 11px 12px 13px 14px 18px 24px',
+                        forced_root_block : false,
+                        force_br_newlines : true,
+                        force_p_newlines : false,
+                        height : '350',
+                        image_advtab: true ,
+                        inline_styles : true,
+                        language : '".tr("TINYMCE_LANGUAGE")."',
+                        relative_urls: false,
+                        remove_script_host : false,
+                        theme: 'modern',
+                        valid_children : '+body[style|section],pre[section|div|p|br|span|img|style|h1|h2|h3|h4|h5],+*[*]',
+                        valid_elements : '+*[*]',
+                        verify_html : false,
+                        menu: {
+                            edit: {title: 'Edit', items: 'undo redo | cut copy paste | selectall'},
+                            insert: {title: 'Insert', items: 'media image link | pagebreak'},
+                            view: {title: 'View', items: 'visualaid'},
+                            format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},
+                            table: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
+                            tools: {title: 'Tools', items: 'code'}
+                        }
                         /* http://stackoverflow.com/questions/10290121/how-to-prevent-tinymce-from-stripping-the-style-attribute-from-input-element */
-                        valid_elements : '@[id|class|style|title|dir<ltr?rtl|lang|xml::lang],'
+                        /* valid_elements : '@[id|class|style|title|dir<ltr?rtl|lang|xml::lang],'
                                 + '+body[style],'
                                 + 'a[rel|rev|charset|hreflang|tabindex|accesskey|type|name|href|target|title|class],strong/b,em/i,strike,u,'
                                 + '#p[style],-ol[type|compact],-ul[type|compact],-li,br,img[longdesc|usemap|src|border|alt=|title|hspace|vspace|width|height|align],-sub,-sup,'
@@ -130,11 +154,7 @@ switch($op){
                                 + 'input[accept|alt|checked|disabled|maxlength|name|readonly|size|src|type|value],'
                                 + 'kbd,label[for],legend,noscript,optgroup[label|disabled],option[disabled|label|selected|value],'
                                 + 'q[cite],samp,select[disabled|multiple|name|size],small,'
-                                + 'textarea[cols|rows|disabled|name|readonly],tt,var,big',
-                                extended_valid_elements : 'p[style]',
-                                inline_styles : true,
-                                verify_html : false
-                                
+                                + 'textarea[cols|rows|disabled|name|readonly],tt,var,big',*/
                     });
                     var elem=$('#chars');
                     $('#subject').limiter(78,elem);
