@@ -1,19 +1,17 @@
 <?php
-if(!file_exists("include/config.php")) {
+session_start();
+ob_start();
+date_default_timezone_set('Europe/Berlin');
+if(!file_exists("include/config.php")){
     header("Location:install.php");
     exit;
-} else {
+} else{
     include("_loader.php");
-    $token=(empty($_POST['token'])?"":$_POST['token']);
-    if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token']);
-    if(!tok_val($token)){
-        header("Location:login.php?error=2");
-        exit;
-    }
 }
+$cnx->query("SET NAMES UTF8");
 $row_config_globale = $cnx->SqlRow("SELECT * FROM $table_global_config");
 (count($row_config_globale)>0)?$r='SUCCESS':$r='';
-if($r != 'SUCCESS') {
+if($r != 'SUCCESS'){
     include("include/lang/english.php");
     echo "<div class='error'>".tr($r)."<br>";
     echo "</div>";
@@ -21,16 +19,23 @@ if($r != 'SUCCESS') {
 }
 if(empty($row_config_globale['language']))$row_config_globale['language']="english";
 include("include/lang/".$row_config_globale['language'].".php");
-$form_pass = (empty($_POST['form_pass']) ? "" : $_POST['form_pass']);
-if (!checkAdminAccess($row_config_globale['admin_pass'], $form_pass)) {
-    header("Location:index.php");
-    exit();
+if(isset($_POST['token'])){$token=$_POST['token'];}elseif(isset($_GET['token'])){$token=$_GET['token'];}else{$token='';}
+if(!tok_val($token)){
+    quick_Exit();
 }
+if(empty($row_config_globale['language']))$row_config_globale['language']="english";
+include("include/lang/".$row_config_globale['language'].".php");
 $_CONTINUE = false;
 $name_table_pj = str_replace('config','upload',$table_global_config);
-$test_pj = $cnx->query("SELECT count(*) AS CPT_TABLE_PJ FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '$database') AND (TABLE_NAME = '$name_table_pj')")->fetch(PDO::FETCH_ASSOC);
+$test_pj = $cnx->query("SELECT count(*) AS CPT_TABLE_PJ 
+    FROM information_schema.TABLES 
+        WHERE (TABLE_SCHEMA = '$database') 
+          AND (TABLE_NAME = '$name_table_pj')")->fetch(PDO::FETCH_ASSOC);
 if($test_pj['CPT_TABLE_PJ']==0){
-    $storage_engine = $cnx->query("SELECT ENGINE FROM information_schema.TABLES WHERE (TABLE_SCHEMA = '$database') AND (TABLE_NAME = '".$row_config_globale['table_archives']."')")->fetch(PDO::FETCH_ASSOC);
+    $storage_engine = $cnx->query("SELECT ENGINE 
+        FROM information_schema.TABLES 
+            WHERE (TABLE_SCHEMA = '$database') 
+              AND (TABLE_NAME = '".$row_config_globale['table_archives']."')")->fetch(PDO::FETCH_ASSOC);
     $sql = 'CREATE TABLE IF NOT EXISTS ' . $name_table_pj . ' (
         `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
         `list_id` int(5) unsigned NOT NULL DEFAULT 0,
@@ -54,7 +59,7 @@ if($test_pj['CPT_TABLE_PJ']==0){
     $_CONTINUE = true;
 }
 if($_CONTINUE){
-    $list_id = (!empty($_GET['list_id']) && empty($list_id)) ? intval($_GET['list_id']) : intval($list_id);
+    $list_id = (!empty($_GET['list_id']) && empty($list_id)) ? (int)$_GET['list_id'] : (int)$list_id;
     ?>
     <!DOCTYPE HTML>
     <html lang="fr">
@@ -93,22 +98,6 @@ if($_CONTINUE){
 <?php
 }
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
