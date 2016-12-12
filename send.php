@@ -162,10 +162,6 @@ switch ($step) {
                 $unsubLink = $row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?i=" .$msg_id
                            . "&list_id=$list_id&op=leave&email_addr=" . urlencode($addr[$i]['email']). "&h=" . $addr[$i]['hash'];
             }
-            // <!-- strtr
-            
-            
-            // strtr -->
             $AltBody = new \Html2Text\Html2Text($body.$message.$unsubLink);
             $mail->AltBody = quoted_printable_encode($AltBody->getText());
             $subject = (strtoupper($row_config_globale['charset']) == "UTF-8" ? $subject : iconv("UTF-8", $row_config_globale['charset'], $subject));
