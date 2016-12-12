@@ -1,4 +1,4 @@
-phpmynewsletter-2.0
+phpmynewsletter 2.0
 ===================
 
 # CURRENT : 2.0.4
