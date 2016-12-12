@@ -62,5 +62,3 @@ GNU GPL
 Please, star if you like ;-)
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Arnaud69/phpmynewsletter-2.0/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
