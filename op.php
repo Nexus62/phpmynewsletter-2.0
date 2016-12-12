@@ -25,7 +25,6 @@ if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token'])
 if(!tok_val($token)){
     quick_Exit();
 }
-
 $op_true = array(
     'createConfig',
     'init',
@@ -36,6 +35,7 @@ $op_true = array(
     'subscriber_add',
     'subscriber_del',
     'subscriber_del_temp',
+    'val_subscriber_temp',
     'subscriber_import',
     'subscriber_mass_delete',
     'smtp_add',
@@ -85,7 +85,7 @@ if(in_array($op,$op_true)){
                                             $_POST['db_pass'],$_POST['db_name'],
                                             $_POST['table_config'],$_POST['db_type'],
                                             $_POST['type_serveur'],$_POST['type_env'],
-                                            $timezone);
+                                            $timezone, $_POST['code_mailtester']);
             }
             saveBounceFile($_POST['bounce_host'],$_POST['bounce_user'],$_POST['bounce_pass'],$_POST['bounce_port'],$_POST['bounce_service'],$_POST['bounce_option']);
             include("include/config.php");
@@ -93,7 +93,7 @@ if(in_array($op,$op_true)){
         break;
         case 'subscriber_add':
             $add_addr = (empty($_POST['add_addr']) ? "" : $_POST['add_addr']);
-            if(!empty($add_addr)){
+            if(!empty($add_addr)&& validEmailAddress($add_addr) ){
                 if(preg_match('/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}/', $add_addr)){
                     $add_r=add_subscriber($cnx,$row_config_globale['table_email'],$list_id,$add_addr,$row_config_globale['table_email_deleted']);
                     if($add_r==0){
@@ -119,6 +119,29 @@ if(in_array($op,$op_true)){
                 $subscriber_op_msg_d = "<h4 class='alert_success'>".tr("SUBSCRIBER_DELETED","<b>$del_addr</b>")."</h4>";
             }else{
                 $subscriber_op_msg_d = "<h4 class='alert_error'>".tr("ERROR_DELETING_SUBSCRIBER","<b>$del_addr</b>")."</h4>";
+            }
+        break;
+        case 'subscriber_del_temp':
+            $del_tmpaddr  = (empty($_POST['TmpUserAdress']) ? "" : $_POST['TmpUserAdress']);
+            $deleted_temp = delete_subscriber($cnx,$row_config_globale['table_temp'],$list_id,$del_tmpaddr,$row_config_globale['table_email_deleted'],'by_admin');
+            if( $deleted_temp ){
+                $subscriber_op_msg_dt =  "<h4 class='alert_success'>".tr("SUBSCRIBER_TEMP_DELETED")."</h4>";
+            }else{
+                $subscriber_op_msg_dt =  "<h4 class='alert_error'>".tr("ERROR_DELETING_TEMP","<i>$del_tmpaddr</i>")."</h4>";
+            }
+        break;
+        case 'val_subscriber_temp':
+            $force_tmpaddr = (empty($_POST['TmpUserAdress']) ? "" : $_POST['TmpUserAdress']);
+            if (!validEmailAddress($force_tmpaddr)) {
+                $deleted_temp = delete_subscriber($cnx,$row_config_globale['table_temp'],$list_id,$force_tmpaddr,$row_config_globale['table_email_deleted'],'hard');
+                $subscriber_op_msg_dt =  "<h4 class='alert_error'>".tr("ERROR_ADDING_SUBSCRIBER_TEMP","<i>$force_tmpaddr</i>")."</h4>";
+            } else {
+                $added_temp = force_subscriber($cnx,$row_config_globale['table_temp'],$list_id,$force_tmpaddr,$row_config_globale['table_email'],unique_id());
+                if( $added_temp ){
+                    $subscriber_op_msg_dt =  "<h4 class='alert_success'>".tr("SUBSCRIBER_TEMP_FORCE_ADDED")." : $force_tmpaddr</h4>";
+                }else{
+                    $subscriber_op_msg_dt =  "<h4 class='alert_error'>".tr("ERROR_ADDING_SUBSCRIBER_TEMP","<i>$force_tmpaddr</i>")."</h4>";
+                }
             }
         break;
         case 'subscriber_import':

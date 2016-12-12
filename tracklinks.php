@@ -40,13 +40,12 @@ if(empty($id_mail)&&empty($list_id)){
         <script src="js/jquery.min.js"></script>
         <script src="js/scripts.js"></script>
         <script src="js/jquery.colorbox.js"></script>
-        <script type="text/javascript">
-        $(document).ready(function() { $(".tablesorter").tablesorter(); } );
-        </script>
+        <script type="text/javascript">$(document).ready(function() { $(".tablesorter").tablesorter(); } );</script>
         <script type="text/javascript" src="js/amcharts/amcharts.js"></script>
         <script type="text/javascript" src="js/amcharts/pie.js"></script>
         <script type="text/javascript" src="js/amcharts/themes/light.js"></script>
         <script type="text/javascript" src="js/amcharts/themes/none.js"></script>
+        <script type="text/javascript" src="js/Chart.js/Chart.js"></script>
     </head>
     <body>
         <section class="column">
@@ -74,8 +73,8 @@ if(empty($id_mail)&&empty($list_id)){
                                     FROM ".$row_config_globale['table_track_links']." 
                                         WHERE list_id=$list_id
                                             AND msg_id=$id_mail
-                                        GROUP BY link
-                                        ORDER BY cpt DESC")->fetchAll(PDO::FETCH_ASSOC);
+                                        GROUP BY substr(link,1,25)
+                                            ORDER BY cpt DESC")->fetchAll(PDO::FETCH_ASSOC);
                     $chart_data='';
                     foreach($links as $row){
                         echo '<tr>';
@@ -112,83 +111,181 @@ if(empty($id_mail)&&empty($list_id)){
                         <div class="spacer"></div>
                     </section>';
                 }
-        $env = $cnx->query("SELECT COUNT(CONCAT(browser,' ', version)) AS CPT,CONCAT(browser,' ',version) AS VERS
-                                FROM ".$row_config_globale['table_tracking']." 
-                                    WHERE subject=$id_mail
-                                        AND (CONCAT(browser,' ',version))!=''
-                                    GROUP BY VERS")->fetchAll(PDO::FETCH_ASSOC);
-        if(count($env)>0){
-            $chart_env='';
-            foreach($env as $row){
-                $chart_env.='{"data": "'.$row['VERS'].'", "value": '.$row['CPT'].'},';
+            $TOTALBROWSER = $cnx->query('SELECT COUNT(*) AS total 
+                                         FROM ' . $row_config_globale['table_tracking'].'
+                                             WHERE subject='.$id_mail)->fetch();
+            $total = $TOTALBROWSER['total'];
+            $results_stat_browser = $cnx->query(
+            'SELECT DISTINCT(CONCAT(browser,\' \',SUBSTRING_INDEX(version,\'.\',1))) AS browser,
+                    COALESCE(COUNT(*),0) AS data
+                FROM ' . $row_config_globale['table_tracking'] . ' 
+                    WHERE subject='.$id_mail.' 
+                       AND browser!=\'\'
+                       AND version!=\'unknown\'
+                       AND browser NOT IN (\'iPhone\',\'iPad\',\'Android\')
+                GROUP BY CONCAT(browser,\' \',SUBSTRING_INDEX(version,\'.\',1))
+                HAVING COUNT(*)>'.($total/100).'
+                    ORDER BY data DESC;'
+            );
+            if (count($results_stat_browser) >0) {
+                $databrowser = '';
+                $cptbrowser = 0;
+                $totalAffiche = 0;
+                foreach ($results_stat_browser as $tab) {
+                    $cptbrowser .= $tab['data'] .',' ;
+                    $databrowser .= '"' . $tab['browser'] . ' ('.round(((int)$tab['data']/$total*100),2).'%) ",';
+                    $totalAffiche = $totalAffiche+(int)$tab['data'];
+                }
+                $cptbrowser .= $total-$totalAffiche ;
+                $databrowser .= '"Others <1% ('.round((($total-$totalAffiche )/$total*100),2).'%) ",';
             }
-            ?>
-            <section>                                                                            
-                <article class="module width_full">
-                    <header>
-                        <h3> <?php echo tr("CLICKED_LINK_REPORT_ENVIRONMENT");?></h3>
-                    </header>
-                    <div id="chartdiv1"></div>
-                    <script>
-                        var chartEnv=AmCharts.makeChart("chartdiv1",{"type":"pie","theme":"light","dataProvider":[<?php echo $chart_env;?>],"valueField":"value",
-                        "titleField":"data","outlineAlpha":0.4,"depth3D": 15,"balloonText":"[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle":30});
-                    </script>
-                </article>
-            </section>
-        <?php
-        }
-        $env = $cnx->query("SELECT COUNT(platform) AS CPT,platform
-                                FROM ".$row_config_globale['table_tracking']." 
-                                    WHERE subject=$id_mail
-                                        AND platform!=''
-                                    GROUP BY platform")->fetchAll(PDO::FETCH_ASSOC);
-        if(count($env)>0){
-            $chart_env='';
-            foreach($env as $row){
-                $chart_env.='{"data": "'.$row['platform'].'", "value": '.$row['CPT'].'},';
+            $results_stat_platform = $cnx->query(
+            'SELECT DISTINCT(platform) AS platform,
+                    COALESCE(COUNT(*),0) AS data
+                FROM ' . $row_config_globale['table_tracking'] . ' 
+                    WHERE subject='.$id_mail.' 
+                       AND platform!=\'\' 
+                       AND platform!=\'unknown\'
+                GROUP BY platform
+                HAVING COUNT(*)>'.($total/100).'
+                    ORDER BY data DESC;'
+            );
+            if (count($results_stat_platform) >0) {
+                $dataplatform = '';
+                $cptplatform = 0;
+                $totalAffiche = 0;
+                foreach ($results_stat_platform as $tab) {
+                    $cptplatform .=  $tab['data'] . ',';
+                    $dataplatform .= '"' . $tab['platform'] . ' ('.round(((int)$tab['data']/$total*100),2).'%) ",';
+                    $totalAffiche = $totalAffiche+(int)$tab['data'];
+                }
+                $cptplatform .= $total-$totalAffiche ;
+                $dataplatform .= '"Others <1% ('.round((($total-$totalAffiche )/$total*100),2).'%) ",';
             }
-            ?>
-            <section>                                                                            
-                <article class="module width_full">
-                    <header>
-                        <h3> <?php echo tr("CLICKED_LINK_REPORT_OS");?></h3>
-                    </header>
-                    <div id="chartdiv2"></div>
-                    <script>
-                        var chartEnv=AmCharts.makeChart("chartdiv2",{"type":"pie","theme":"light","dataProvider":[<?php echo $chart_env;?>],"valueField":"value",
-                        "titleField":"data","outlineAlpha":0.4,"depth3D": 15,"balloonText":"[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle":30});
-                    </script>
-                </article>
-            </section>
-        <?php
-        }
-        $env = $cnx->query("SELECT COUNT(devicetype) AS CPT,devicetype
-                                FROM ".$row_config_globale['table_tracking']." 
-                                    WHERE subject=$id_mail
-                                        AND devicetype!=''
-                                    GROUP BY devicetype")->fetchAll(PDO::FETCH_ASSOC);
-        if(count($env)>0){
-            $chart_env='';
-            foreach($env as $row){
-                $chart_env.='{"data": "'.$row['devicetype'].'", "value": '.$row['CPT'].'},';
+            $results_stat_devicetype= $cnx->query(
+            'SELECT DISTINCT(devicetype) AS devicetype,
+                    COALESCE(COUNT(*),0) AS data
+                FROM ' . $row_config_globale['table_tracking'] . ' 
+                    WHERE subject='.$id_mail.' 
+                       AND devicetype!=\'\'
+                GROUP BY devicetype
+                HAVING COUNT(*)>'.($total/100).'
+                    ORDER BY data DESC;'
+            );
+            if (count($results_stat_devicetype) >0) {
+                $datadevicetype = '';
+                $cptdevicetype = 0;
+                $totalAffiche = 0;
+                foreach ($results_stat_devicetype as $tab) {
+                    $cptdevicetype .= $tab['data'] . ',';
+                    $datadevicetype .= '"' . $tab['devicetype'] . ' ('.round(((int)$tab['data']/$total*100),2).'%) ",';
+                    $totalAffiche = $totalAffiche+(int)$tab['data'];
+                }
+                $cptdevicetype .= $total-$totalAffiche ;
+                $datadevicetype .= '"Others <1% ('.round((($total-$totalAffiche )/$total*100),2).'%) ",';
             }
-            ?>
-            <section>                                                                            
-                <article class="module width_full">
-                    <header>
-                        <h3> <?php echo tr("CLICKED_LINK_REPORT_SUPPORT");?></h3>
-                    </header>
-                    <div id="chartdiv3"></div>
-                    <script>
-                        var chartEnv=AmCharts.makeChart("chartdiv3",{"type":"pie","theme":"light","dataProvider":[<?php echo $chart_env;?>],"valueField":"value",
-                        "titleField":"data","outlineAlpha":0.4,"depth3D": 15,"balloonText":"[[title]]<br><span style='font-size:14px'><b>[[value]]</b> ([[percents]]%)</span>","angle":30});
-                    </script>
-                </article>
-            </section>
-            
-        <?php
-        }
+            $TOTALUSERAGENT = $cnx->query('SELECT COUNT(*) AS total 
+                FROM ' . $row_config_globale['table_tracking'] . ' 
+                    WHERE subject='.$id_mail.' 
+                       AND (useragent like "%outlook%"
+                       OR useragent like "%Thunderbird%"
+                       OR useragent like "%Icedove%"
+                       OR useragent like "%Shredder%"
+                       OR useragent like "%Airmail%"
+                       OR useragent like "%Lotus-Notes%"
+                       OR useragent like "%Barca%"
+                       OR useragent like "%Postbox%"
+                       OR useragent like "%MailBar%"
+                       OR useragent like "%The Bat!%")')->fetch();
+            $totalua = $TOTALUSERAGENT['total'];
+            $totalAffiche = 0;
+            $results_stat_ua= $cnx->query(
+            'SELECT DISTINCT(useragent) AS useragent,
+                    COALESCE(COUNT(*),0) AS data
+                FROM ' . $row_config_globale['table_tracking'] . ' 
+                    WHERE (useragent like "%outlook%"
+                       OR useragent like "%Thunderbird%"
+                       OR useragent like "%Icedove%"
+                       OR useragent like "%Shredder%"
+                       OR useragent like "%Airmail%"
+                       OR useragent like "%Lotus-Notes%"
+                       OR useragent like "%Barca%"
+                       OR useragent like "%Postbox%"
+                       OR useragent like "%MailBar%"
+                       OR useragent like "%The Bat!%")
+                    GROUP BY useragent
+                        ORDER BY data DESC;'
+            );
+            if (count($results_stat_ua) >0) {
+                $tmpDataUa=array();
+                foreach ($results_stat_ua as $tab) {
+                    $str = $tab['useragent'];
+                    $mua=array();
+                    if(preg_match('/Thunderbird(?:\/(\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Thunderbird']=$tmpDataUa['Thunderbird']+$tab['data'];
+                    }elseif(preg_match('/Shredder(?:\/(\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Shredder']=$tmpDataUa['Shredder']+$tab['data'];
+                    }elseif(preg_match('/Icedove(?:\/(\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Icedove']=$tmpDataUa['Icedove']+$tab['data'];
+                    }elseif(preg_match('/Outlook-Express(?:\/(\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Outlook-Express']=$tmpDataUa['Outlook-Express']+$tab['data'];
+                    }elseif(preg_match('/Microsoft Outlook(?: Mail)?(?:[\/ ](\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Microsoft Outlook']=$tmpDataUa['Microsoft Outlook']+$tab['data'];
+                    }elseif(preg_match('/Lotus-notes(?:\/(\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Lotus-notes']=$tmpDataUa['Lotus-notes']+$tab['data'];
+                    }elseif(preg_match('/Postbox(?:[\/ ](\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Postbox']=$tmpDataUa['Postbox']+$tab['data'];
+                    }elseif(preg_match('/MailBar(?:[\/ ](\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['MailBar']=$tmpDataUa['MailBar']+$tab['data'];
+                    }elseif(preg_match('/The Bat!(?: Voyager)?(?:[\/ ](\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['The Bat!']=$tmpDataUa['The Bat!']+$tab['data'];
+                    }elseif(preg_match('/Barca(?:Pro)?(?:[\/ ](\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Barca']=$tmpDataUa['Barca']+$tab['data'];
+                    }elseif(preg_match('/Airmail(?: (\d+[\.\d]+))?/iD', $str)) {
+                        $tmpDataUa['Airmail']=$tmpDataUa['Airmail']+$tab['data'];
+                    }
+                }
+                $cptua=0;
+                $dataua='';
+                foreach ($tmpDataUa as $uaName => $value) {
+                    $cptua .= $value . ',';
+                    $dataua .= '"' . $uaName . ' ('.round(((int)$value/$totalua*100),1).'%) ",';
+                }
+            }
         ?>
+        <section>                                                                            
+            <article class="module width_full">
+                <table>
+                    <tr>
+                        <td width="25%"><div align="center"><h4><?php echo tr("CLICKED_LINK_REPORT_ENVIRONMENT"); ?></h4></div><canvas id="PmnlStatsBrowser" /></td>
+                        <td width="25%"><div align="center"><h4><?php echo tr("MAIL_CLIENT"); ?></h4></div><canvas id="PmnlPim" /></td>
+                        <td width="25%"><div align="center"><h4><?php echo tr("CLICKED_LINK_REPORT_OS"); ?></h4></div><canvas id="PmnlStatsPlatform" /></td>
+                        <td width="25%"><div align="center"><h4><?php echo tr("SUPPORT"); ?></h4></div><canvas id="PmnlStatsDevicetype" /></td>
+                    </tr>
+                    <tr>
+                        <td><div id="PmnlStatsBrowser-legend" class="chart-legend"></div></td>
+                        <td><div id="PmnlPim-legend" class="chart-legend"></div></td>
+                        <td><div id="PmnlStatsPlatform-legend" class="chart-legend"></div></td>
+                        <td><div id="PmnlStatsDevicetype-legend" class="chart-legend"></div></td>
+                    </tr>
+                </table>
+            </article>
+        </section>
+        <script>
+            Chart.defaults.global.legend.display = false;
+            var PmnlChartBrowser = $("#PmnlStatsBrowser");
+            var mCbrowser = new Chart(PmnlChartBrowser, { type: 'pie',data:{ labels:[<?php echo $databrowser; ?>],datasets: [{ data: [<?php echo $cptbrowser; ?>],backgroundColor:['#ff0000','#ff4000','#ff8000','#ffbf00','#ffff00','#bfff00','#80ff00','#40ff00','#00ff00','#00ff40','#00ff80','#00ffbf','#00ffff','#00bfff','#0080ff','#0040ff','#0000ff','#4000ff','#8000ff','#bf00ff','#ff00ff','#ff00bf','#ff0080','#ff0040','#ff0000','#946d70','#563957','#5e6370','#78bac2','#376182','#3a000f','#85888c','#cd7320','#7f9c95','#b4eeb4','#794044','#205c2e','#1c6d26','#ff0f3b','#4a4146','#a4a0a2','#0011a8','#000532','#d3f660','#546226','#ff4265','#292929','#8e561a','#ffe4e1','#ffc0cb','#000000','#ff0000','#1075bc','#07adeb','#acdfe8','#f5f5f5','#277ead','#eff3f9','#eff3f9','#511323','#ffe4e1','#141414','#ff4265','#54ff9f','#cbf3ad','#543544','#15315c'],}]},});
+            document.getElementById('PmnlStatsBrowser-legend').innerHTML = mCbrowser.generateLegend();
+            var PmnlChartPim = $("#PmnlPim");
+            var mPim = new Chart(PmnlPim, { type: 'pie',data:{ labels:[<?php echo $dataua; ?>],datasets: [{ data: [<?php echo $cptua; ?>],backgroundColor:['#ff0000','#ff4000','#ff8000','#ffbf00','#ffff00','#bfff00','#80ff00','#40ff00','#00ff00','#00ff40','#00ff80','#00ffbf','#00ffff','#00bfff','#0080ff','#0040ff','#0000ff','#4000ff','#8000ff','#bf00ff','#ff00ff','#ff00bf','#ff0080','#ff0040','#ff0000','#946d70','#563957','#5e6370','#78bac2','#376182','#3a000f','#85888c','#cd7320','#7f9c95','#b4eeb4','#794044','#205c2e','#1c6d26','#ff0f3b','#4a4146','#a4a0a2','#0011a8','#000532','#d3f660','#546226','#ff4265','#292929','#8e561a','#ffe4e1','#ffc0cb','#000000','#ff0000','#1075bc','#07adeb','#acdfe8','#f5f5f5','#277ead','#eff3f9','#eff3f9','#511323','#ffe4e1','#141414','#ff4265','#54ff9f','#cbf3ad','#543544','#15315c'],}]},});
+            document.getElementById('PmnlPim-legend').innerHTML = mPim.generateLegend();
+            var PmnlChartPlatform = document.getElementById("PmnlStatsPlatform");
+            var mCplatform = new Chart(PmnlChartPlatform, { type: 'pie',data:{ labels:[<?php echo $dataplatform; ?>],datasets: [{ data: [<?php echo $cptplatform; ?>],backgroundColor:['#ff0000','#ff4000','#ff8000','#ffbf00','#ffff00','#bfff00','#80ff00','#40ff00','#00ff00','#00ff40','#00ff80','#00ffbf','#00ffff','#00bfff','#0080ff','#0040ff','#0000ff','#4000ff','#8000ff','#bf00ff','#ff00ff','#ff00bf','#ff0080','#ff0040','#ff0000','#946d70','#563957','#5e6370','#78bac2','#376182','#3a000f','#85888c','#cd7320','#7f9c95','#b4eeb4','#794044','#205c2e','#1c6d26','#ff0f3b','#4a4146','#a4a0a2','#0011a8','#000532','#d3f660','#546226','#ff4265','#292929','#8e561a','#ffe4e1','#ffc0cb','#000000','#ff0000','#1075bc','#07adeb','#acdfe8','#f5f5f5','#277ead','#eff3f9','#eff3f9','#511323','#ffe4e1','#141414','#ff4265','#54ff9f','#cbf3ad','#543544','#15315c'],}]},});
+            document.getElementById('PmnlStatsPlatform-legend').innerHTML = mCplatform.generateLegend();
+            var PmnlChartDevicetype = $("#PmnlStatsDevicetype");
+            var mCdevicetype = new Chart(PmnlChartDevicetype, { type: 'pie',data:{ labels:[<?php echo $datadevicetype; ?>],datasets: [{ data: [<?php echo $cptdevicetype; ?>],backgroundColor:['#ff0000','#ff4000','#ff8000','#ffbf00','#ffff00','#bfff00','#80ff00','#40ff00','#00ff00','#00ff40','#00ff80','#00ffbf','#00ffff','#00bfff','#0080ff','#0040ff','#0000ff','#4000ff','#8000ff','#bf00ff','#ff00ff','#ff00bf','#ff0080','#ff0040','#ff0000','#946d70','#563957','#5e6370','#78bac2','#376182','#3a000f','#85888c','#cd7320','#7f9c95','#b4eeb4','#794044','#205c2e','#1c6d26','#ff0f3b','#4a4146','#a4a0a2','#0011a8','#000532','#d3f660','#546226','#ff4265','#292929','#8e561a','#ffe4e1','#ffc0cb','#000000','#ff0000','#1075bc','#07adeb','#acdfe8','#f5f5f5','#277ead','#eff3f9','#eff3f9','#511323','#ffe4e1','#141414','#ff4265','#54ff9f','#cbf3ad','#543544','#15315c'],}]},});
+            document.getElementById('PmnlStatsDevicetype-legend').innerHTML = mCdevicetype.generateLegend();
+        </script>
         <div class="spacer"></div>
     </body>
 </html>

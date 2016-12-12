@@ -45,7 +45,7 @@ if (empty($langfile)) {
     <header id="header">
         <hgroup>
             <h1 class="site_title"><a href="http://www.phpmynewsletter.com">PhpMyNewsLetter</a></h1>
-            <h2 class="section_title"><?php echo tr("INSTALL_TITLE") . " " . $step . "/4";?></h2><div class="btn_view_site"><a href="https://www.phpmynewsletter.com/forum/" target="_blank"><?php echo tr("SUPPORT");?></a></div>
+            <h2 class="section_title"><?php echo tr("INSTALL_TITLE") . " " . $step . "/4";?></h2><div class="btn_view_site"><a href="http://www.phpmynewsletter.com/forum/" target="_blank"><?php echo tr("SUPPORT");?></a></div>
         </hgroup>
     </header>
     <section id="secondary_bar">
@@ -415,6 +415,14 @@ if (empty($langfile)) {
                     . tr("CHECK_PERMISSIONS_OR_CREATE") . ' "'.$path.'include/DKIM" ' . tr("MANUALLY") . '<br>' . tr("INSTALL_REFRESH") . ' !</div>');
                 }
             }
+            if(!is_dir("logs")){
+                if(mkdir("logs",0777)){
+                    echo '<h4 class="alert_success">'.tr("LOGS_DIRECTORY").' '.tr("DONE").'</h4>';
+                } else {
+                    die('<h4 class="alert_error">'.tr("LOGS_DIRECTORY").' : "'.$path.'logs".<br>' 
+                    . tr("CHECK_PERMISSIONS_OR_CREATE") . ' "'.$path.'logs" ' . tr("MANUALLY") . '<br>' . tr("INSTALL_REFRESH") . ' !</div>');
+                }
+            }
             if(!is_dir("include/backup_crontab")){
                 if(mkdir("include/backup_crontab",0755)){
                     echo '<h4 class="alert_success">'.tr("BK_CRONTAB_DIRECTORY").' '.tr("DONE").'</h4>';
@@ -458,7 +466,7 @@ if (empty($langfile)) {
                                 `hash` VARCHAR(40) NOT NULL DEFAULT "",
                                 `error` ENUM("N","Y") NOT NULL DEFAULT "N",
                                 `status` VARCHAR(255) DEFAULT NULL,
-                                `type` ENUM("autoreply","blocked","soft","hard","temporary"),
+                                `type` ENUM("","autoreply","blocked","generic","soft","hard","temporary","unsub","by_admin"),
                                 `categorie` VARCHAR(255) NOT NULL DEFAULT "",
                                 `short_desc` TEXT NOT NULL,
                                 `long_desc` TEXT NOT NULL,
@@ -483,7 +491,7 @@ if (empty($langfile)) {
                                 `hash` VARCHAR(40) NOT NULL DEFAULT "",
                                 `error` ENUM("N","Y") NOT NULL DEFAULT "N",
                                 `status` VARCHAR(255) DEFAULT NULL,
-                                `type` ENUM("autoreply","blocked","soft","hard","temporary","unsub","by_admin"),
+                                `type` ENUM("","autoreply","blocked","generic","soft","hard","temporary","unsub","by_admin"),
                                 `categorie` VARCHAR(255) NOT NULL DEFAULT "",
                                 `short_desc` TEXT NOT NULL,
                                 `long_desc` TEXT NOT NULL,
@@ -753,7 +761,7 @@ if (empty($langfile)) {
                         'utf-8', '" . $table_prefix . "track', '" . $table_prefix . "send',
                         '" . $table_prefix . "autosave', '" . $table_prefix . "send_suivi', 
                         '" . $table_prefix . "track_links', '" . $table_prefix . "upload',
-                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted','$alert_sub','1')";
+                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted','$alert_sub')";
             if($cnx->Sql($sql)){
                 echo '<h4 class="alert_success">' . tr("INSTALL_SAVE_CONFIG") . ' ' .tr("DONE").'</h4>';
             }else{

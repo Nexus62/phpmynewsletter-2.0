@@ -19,17 +19,13 @@ if($r != 'SUCCESS'){
 }
 if(empty($row_config_globale['language']))$row_config_globale['language']="english";
 include("include/lang/".$row_config_globale['language'].".php");
-$token=(empty($_POST['token'])?"":$_POST['token']);
-if(!isset($token) || $token=="")$token=(empty($_GET['token'])?"":$_GET['token']);
+if(isset($_POST['token'])){$token=$_POST['token'];}elseif(isset($_GET['token'])){$token=$_GET['token'];}else{$token='';}
 if(!tok_val($token)){
     quick_Exit();
 }
-
 include("include/php/_vars.php");
-
 include("include/php/_actions.php");
 include("op.php");
-
 if(file_exists('include/config_bounce.php')){
     include('include/config_bounce.php');
 }
@@ -139,7 +135,6 @@ if(!$list&&$page!="config"){
         });
     })(jQuery);
     $(document).ready(function(){$(".iframe").colorbox({iframe:true,width:"80%",height:"80%"});});
-    $('#ts').jsclock('<?php echo date('H:i:s');?>');
     <?php
     $sticky_pages=array('undisturbed','config','compose','listes','newsletterconf','manager_mailq');
     if(in_array($page,$sticky_pages)){
@@ -162,7 +157,7 @@ if(!$list&&$page!="config"){
         $("input#searchid").keyup(function(){ 
             var searchid = $(this).val();
             var token    = '<?php echo $token;?>';
-            var dataString = 'search='+ searchid +'&token='+token;
+            var dataString = 'search='+ searchid +'&token='+token+'&list_id=<?php echo $list_id;?>';
             if(searchid!=''){
                 $.ajax({
                     type: "POST",
@@ -205,5 +200,8 @@ if(!$list&&$page!="config"){
         ?>
         <div class="spacer"></div>
     </section>
+    <script>
+    $('#ts').jsclock('<?php echo date('H:i:s');?>');
+    </script>
 </body>
 </html>

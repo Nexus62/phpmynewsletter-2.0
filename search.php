@@ -26,9 +26,14 @@ if($r != 'SUCCESS') {
 if(empty($row_config_globale['language']))$row_config_globale['language']="english";
 include("include/lang/".$row_config_globale['language'].".php");
 !empty($_POST['search']) ? $q=$_POST['search'] : $q='';
-if(!empty($q)){
-    $tabMails = getEmail($cnx, $q, $row_config_globale['table_email']);
-    if(sizeof($tabMails)){
+!empty($_POST['list_id']) ? $list_id=$_POST['list_id'] : $list_id='';
+if(!empty($q) && !empty($list_id)){
+    //$tabMails = getEmail($cnx, $q, $row_config_globale['table_email']);
+    $tabMails = $cnx->query("SELECT email 
+                                 FROM ".$row_config_globale['table_email'] ."
+                                     WHERE email like '%$q%' 
+                                         AND LIST_ID='$list_id' LIMIT 0,5")->fetchAll(PDO::FETCH_ASSOC);
+    if(count($tabMails)>0){
         foreach($tabMails as $row){
             $q_strong = '<strong>'.$q.'</strong>';
             $show_mail = str_ireplace($q, $q_strong, $row['email']);

@@ -52,7 +52,7 @@ switch ($step) {
         );
         $mail->CharSet = $row_config_globale['charset'];
         $mail->ContentType="text/html";
-        $mail->Encoding = $encode ;
+        //$mail->Encoding = $encode ;
         $mail->PluginDir= "include/lib/";
         $newsletter     = getConfig($cnx, $list_id, $row_config_globale['table_listsconfig']);
         $mail->From     = $newsletter['from_addr'];
@@ -88,12 +88,11 @@ switch ($step) {
             $subject    = stripslashes($msg['subject']);
         }
         $subject = $subject.' ('.tr("MAIL_PREVIEW_SEND").')';
-        if ($format == "html"){
-            $message .= "<br />";
+        if ( $format == "html" ){
             $mail->IsHTML(true);
         }
         $AltMessage = $message;
-        $mail->WordWrap = 78;
+        $mail->WordWrap = 76;
         if (file_exists("DKIM/DKIM_config.php")&&($row_config_globale['sending_method']=='smtp'||$row_config_globale['sending_method']=='php_mail')) {
             include("DKIM/DKIM_config.php");
             $mail->DKIM_domain     = $DKIM_domain;
@@ -108,6 +107,9 @@ switch ($step) {
         $mail->ClearAddresses();
         $mail->ClearCCs();
         $mail->ClearBCCs();
+        if(isset($code_mailtester) && $code_mailtester!='') {
+            $mail->AddAddress($code_mailtester.'@mail-tester.com');
+        }
         $mail->AddAddress($addr);
         $mail->XMailer = ' ';
         $body = "";
@@ -117,11 +119,15 @@ switch ($step) {
             $trac = "";
         }
         if ( $format == "html" ){
+            $url_survey = 'appliance/contact-form-arcserve.php?h=fake_hash&list_id='.$list_id.'&email_addr='. $addr[$i]['email'];
+            $message = str_replace( '{{URL_SURVEY}}' , $url_survey , $message );
+            /*
             $body .= "<html><head></head><body>";
             $body .= "<div align='center' style='font-size:10pt;font-family:arial,helvetica,sans-serif;padding-bottom:5px;color:#878e83;'>";
             $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url'].$row_config_globale['path']."online.php?i=$msg_id&list_id=$list_id&email_addr=".$addr."&h=fake_hash'>")."<br />";
             $body .= tr("ADD_ADRESS_BOOK", $newsletter['from_addr'])."<br />";
             $body .= "<hr noshade='' color='#D4D4D4' width='90%' size='1'></div>";
+            */
             $new_url = 'href="' . $row_config_globale['base_url'] . $row_config_globale['path'] .'r.php?m='.$msg_id.'&h=fake_hash&l='.$list_id.'&r=';
             $message = preg_replace_callback(       
                 '/href="(http[s]?:\/\/)([^"]+)"/',
@@ -134,7 +140,7 @@ switch ($step) {
                         . tr("UNSUBSCRIBE_LINK", "<a href='" . $row_config_globale['base_url'] . $row_config_globale['path'] 
                         . "subscription.php?i=$msg_id&list_id=$list_id&op=leave&email_addr=" . $addr 
                         . "&h=fake_hash' style='' target='_blank'>")
-                        . "<br /><a href='https://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
+                        . "<br /><a href='http://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
         } else {
             $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url'].$row_config_globale['path']
                   ."online.php?i=$msg_id&list_id=$list_id&email_addr=".$addr."&h=fake_hash'>")."<br />";
@@ -162,7 +168,4 @@ switch ($step) {
         header("location:send_preview.php?step=sendpreview&begin=0&list_id=$list_id&msg_id=$msg_id&sn=$num&error=0&token=$token&encode=$encode");
         break;
 }
-
-
-
 

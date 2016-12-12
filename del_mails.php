@@ -31,10 +31,22 @@ if(empty($row_config_globale['language'])){
 $q = (empty($_POST['search']) ? "" : $_POST['search']);
 $list_id = (empty($_POST['list_id']) ? "" : $_POST['list_id']);
 if(!empty($q)&&!empty($list_id)){
-    $deleted = delete_subscriber($cnx,$row_config_globale['table_email'],$list_id,$q,$row_config_globale['table_email_deleted'],'by_admin');
-    if($deleted){
-        echo "<h4 class='alert_success'>".tr("SUBSCRIBER_DELETED")."</h4>";
-    }else{
-        echo "<h4 class='alert_error'>".tr("ERROR_DELETING_SUBSCRIBER","<i>$del_addr</i>")."</h4>";
+    $cpt_to_delete=$cnx->query("SELECT email
+                                    FROM ".$row_config_globale['table_email']." 
+                                        WHERE email=".escape_string($cnx,$q)." 
+                                            AND list_id='".(int)$list_id."'")->fetchAll();
+    if (count($cpt_to_delete)>0) {
+        $deleted = delete_subscriber($cnx,$row_config_globale['table_email'],$list_id,$q,$row_config_globale['table_email_deleted'],'by_admin');
+        if($deleted){
+            echo "<h4 class='alert_success'>".tr("SUBSCRIBER_DELETED","<i>$q</i>")."</h4>";
+        }else{
+            echo "<h4 class='alert_error'>".tr("ERROR_DELETING_SUBSCRIBER","<i>$q</i>")."</h4>";
+        }
+    } else {
+        echo '<h4 class="alert_error">'.tr("SUBSCRIPTION_UNKNOWN_EMAIL_ADDRESS").'</h4>';
     }
 }
+
+
+
+
