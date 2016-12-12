@@ -860,7 +860,6 @@ class CwsMailBounceHandler
         }
         
         set_time_limit(6000);
-        
         $this->_handler = imap_open("{" . $this->host . ":" . $this->port . $opts . "}" . $this->boxname, $this->username, $this->password, !$this->test_mode ? CL_EXPUNGE : null);
 
         if (!$this->_handler) {
@@ -1085,7 +1084,6 @@ class CwsMailBounceHandler
                     $body_sections['ar_machine']['Original-rcpt-to'] = $this->extractEmail($body_sections['ar_machine']['Original-rcpt-to']);
                 }
             }
-            
             $recipient = $this->_recipient_result;
             $recipient['email'] = $body_sections['ar_machine']['Original-rcpt-to'];
             $recipient['status'] = '5.7.1';
@@ -1135,7 +1133,6 @@ class CwsMailBounceHandler
         } else {
             $result['processed'] = false;
         }
-        
         if (empty($result['subject']) && isset($header['Subject'])) {
             $result['subject'] = $header['Subject'];
         }
@@ -1163,10 +1160,17 @@ class CwsMailBounceHandler
                 $result['recipients'][] = $recipient;
             }
         }
-        
+        // extract values to give the good number of newsletter in a campaign to bounce
+        if (@preg_match("/(.*)i=([0-9]{1,9})&list_id=([0-9]{1,9})&op=leave&email_addr=(.*)&h=(?P<name>\w+)>/i", $header['List-unsubscribe'])) {
+            @preg_match("/(.*)i=([0-9]{1,9})&list_id=([0-9]{1,9})&op=leave&email_addr=(.*)&h=(?P<name>\w+)>/i", $header['List-unsubscribe'], $arg);
+            if ($arg[3]!=NULL) {
+                $result['id_mail']=$arg[2];;
+                $result['list_id']=$arg[3];
+                $result['hash']=$arg[5];
+            }
+        }
         $this->output('<strong>Result:</strong>', CWSMBH_VERBOSE_REPORT);
         $this->output($result, CWSMBH_VERBOSE_REPORT, false, true);
-        
         return $result;
     }
     

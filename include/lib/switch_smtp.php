@@ -163,17 +163,3 @@ switch ($send_method) {
         die(tr("NO_SEND_DEFINITION"));
         break;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
