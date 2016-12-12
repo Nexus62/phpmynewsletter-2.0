@@ -4,7 +4,7 @@ header('Cache-Control: no-cache, must-revalidate');
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 header('Content-type: application/json'); 
 if(!file_exists("config.php")) {
-    header("Location:install.php");
+    header("Location:../install.php");
     exit;
 } else {
     session_start();
@@ -69,13 +69,36 @@ if(file_exists("config_bounce.php")){
         .tr("BOUNCE_COUNTER_DELETED").' : '.$result['counter']['deleted'].'<br>'
         .tr("BOUNCE_COUNTER_MOVED").  ' : '.$result['counter']['moved'];
     if(count($result)>0){
+        /*
+        array(8) {
+        ["token"]=>
+        int(301)
+        ["processed"]=>
+        bool(false)
+        ["subject"]=>
+        string(53) "Workshop Acronis Backup v12 chez D2B, sans emailtrack"
+        ["type"]=>
+        NULL
+        ["recipients"]=>
+        array(0) {
+        }
+        ["id_mail"]=>
+        string(3) "293"
+        ["list_id"]=>
+        string(1) "6"
+        ["hash"]=>
+        string(32) "718a6bf088eb121906f33738bddb50c4"
+    }
+    */
         foreach($result['msgs'] as $item){
             $expl = @$cwsMailBounceHandler->findStatusExplanationsByCode($item['recipients'][0]['status']);
             if($item['processed']&&$item['recipients'][0]['action']=='failed'&&$type_env=='prod'){
-                UpdateEmailError($cnx,$row_config_globale['table_email'],$list_id,$item['recipients'][0]['email'],
-                                 $item['recipients'][0]['status'],$item['recipients'][0]['bounce_type'],$item['recipients'][0]['bounce_cat'],
-                                 $expl['third_subcode']['title'],$expl['third_subcode']['desc'],$campaign_id['id_mail'],
-                                 $row_config_globale['table_email_deleted'],$row_config_globale['table_send']);
+                UpdateEmailError($cnx , $row_config_globale['table_email'] , $item['recipients'][0]['list_id'] , 
+                                 $item['recipients'][0]['email'] , $item['recipients'][0]['status'] ,
+                                 $item['recipients'][0]['bounce_type'] , $item['recipients'][0]['bounce_cat'] ,
+                                 $expl['third_subcode']['title'] , $expl['third_subcode']['desc'] , 
+                                 $item['recipients'][0]['id_mail'] , $row_config_globale['table_email_deleted'] , 
+                                 $row_config_globale['table_send'] , $item['recipients'][0]['hash']);
             }
         }
     }

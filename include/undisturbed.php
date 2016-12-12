@@ -2,7 +2,7 @@
 if($type_serveur=='dedicated'){
     echo '<article class="module width_3_quarter">';
     echo '<header><h3 class="tabs_involved">'.tr("UNDISTURBED_TITLE").' :</h3></header>';
-    $bounced = list_bounce_error($cnx,$row_config_globale['table_email'],$list_id);
+    $bounced = list_bounce_error($cnx,$row_config_globale['table_email_deleted'],$list_id);
     if(count($bounced)>0){
         echo '<table class="bndtable" cellspacing="0"> 
             <thead> 
@@ -41,13 +41,13 @@ if($type_serveur=='dedicated'){
     echo '<div  id="pbar_outerdiv"><div id="pbar_innerdiv" style="background-color: lightblue; z-index: 2; height: 5px; width: 0%;"></div>
     <div id="pbar_innertext" style="z-index: 3; color: black; font-weight: bold; text-align: center;">0%</div></div>';
     echo '</div></article>';
-    $chart_bounce = list_bounce_error_chart_data($cnx,$row_config_globale['table_email'],$list_id);
+    //$chart_bounce = list_bounce_error_chart_data($cnx,$row_config_globale['table_email_deleted'],$list_id);
     if(count($chart_bounce)>0){
         $chart_data='';
         foreach($chart_bounce as $row){
             $chart_data.='{"data": "'.$row['status'].'", "value": '.$row['NB_ERROR'].'},';
         }
-        $chart_bounce_type = list_bounce_error_chart_data_by_type($cnx,$row_config_globale['table_email'],$list_id);
+        $chart_bounce_type = list_bounce_error_chart_data_by_type($cnx,$row_config_globale['table_email_deleted'],$list_id);
         $chart_bounce_data_type='{"type": "hard", "value": '.$chart_bounce_type[0]['hard'].'}, {"type": "soft", "value": '.$chart_bounce_type[0]['soft'].'},';
         ?>
         <article class="module width_3_quarter">

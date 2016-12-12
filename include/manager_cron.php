@@ -64,6 +64,11 @@ if ( $continue ) {
             $cnx->query( 'DELETE FROM ' . $row_config_globale[ 'table_sauvegarde' ] . ' WHERE list_id = "' . $list_id . '"' );
             //echo 'UPDATE '.$row_config_globale['table_upload'].' SET msg_id='.$msg_id.' WHERE list_id='.$list_id.' AND msg_id=0';
             $cnx->query( 'UPDATE ' . $row_config_globale[ 'table_upload' ] . ' SET msg_id=' . $msg_id . ' WHERE list_id=' . $list_id . ' AND msg_id=0' );
+            $cnx->query( 'INSERT INTO ' . $row_config_globale['table_archives'] . ' (id , date , type , subject , message , list_id)
+                            SELECT "' . $msg_id . '","' . date( "Y-m-d H:i:s" ) . '" , type , mail_subject , mail_body , list_id 
+                                FROM ' . $row_config_globale['table_crontab'] . '
+                                    WHERE list_id = "' . $list_id . '" 
+                                        AND job_id = "' . $cronID . '"');
             $continue_transaction = true;
             break;
         case 'update':

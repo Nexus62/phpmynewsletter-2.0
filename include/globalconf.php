@@ -95,6 +95,10 @@ echo '<article class="module width_3_quarter">
         echo "<input type='text' name='admin_name' size='30' value='" . htmlspecialchars($row_config_globale['admin_name']) . "' /></fieldset>";
         echo "<fieldset><label>".tr("GCONFIG_MESSAGE_ADMIN_MAIL")."</label>";
         echo "<input type='text' name='admin_email' size='30' value='" . htmlspecialchars($row_config_globale['admin_email']) . "' /></fieldset>";
+        
+        echo "<fieldset><label>".tr("GCONFIG_MESSAGE_CODE_MAILTESTER")."</label>";
+        echo "<input type='text' name='code_mailtester' size='30' value='" . ($code_mailtester!='' ? $code_mailtester : '') . "' /></fieldset>";
+        
         echo "<fieldset><label>".tr("GCONFIG_MESSAGE_CHARSET")."</label>";
         echo "<select name='charset'>";
         sort($locals);
@@ -238,7 +242,6 @@ echo "<input type='submit' value='" . tr("GCONFIG_SAVE_BTN") . "' class='button'
 echo "<br>&nbsp;";
 echo '</div></article>';
 echo "</form>";
-
 
 
 

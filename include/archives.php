@@ -28,57 +28,50 @@ if ($archives = getArchivesselectList($cnx, $row_config_globale['table_archives'
 }
 echo "</form>";
 if (!empty($msg_id) && empty($action)) {
-    /*
-    $diff_send = $cnx->SqlRow("SELECT s.cpt AS cpt_send, COUNT(e.email) AS cpt_rec FROM
-                    ".$row_config_globale['table_email']." e, ".$row_config_globale['table_send']." s
-                    WHERE e.list_id=s.id_list
-                        AND s.id_mail = '".$msg_id."'
-                        AND s.id_list = '".$list_id."'
-                        AND e.error   = 'N';");
-    */
-    $diff_send = $cnx->SqlRow("SELECT COUNT(email) AS cpt_to_send FROM
+    $TOSEND=$cnx->SqlRow("SELECT COUNT(email) AS cpt_to_send FROM
                         ".$row_config_globale['table_email']."
                             WHERE list_id   = '".$list_id."'
-                                AND error   = 'N'
-                                AND campaign_id <
-                                (
-                                    SELECT MAX(id_mail) FROM 
+                                AND error   = 'N'");
+    $REALLYSENDED=$cnx->SqlRow("SELECT cpt AS cp_really_sended FROM 
                                         ".$row_config_globale['table_send']."
                                             WHERE id_list = '".$list_id."'
-                                )");
-    $to_send = $diff_send['cpt_to_send'];
+                                                AND id_mail = '".$msg_id."'");
+    $to_send = (int)$TOSEND['cpt_to_send']-(int)$REALLYSENDED['cp_really_sended'];
     $js = false;
     if($to_send==1){
-        echo '<br><div id="messInfo"><h4 class="alert_warning" id="SendIt">'.tr("SUBSCRIBER_DIDNT_RECEIVE", $to_send).'<h4></div><br>';
+        echo '<br><div id="messInfo"><h4 class="alert_warning pointer" id="SendIt">'.tr("SUBSCRIBER_DIDNT_RECEIVE", $to_send).'<h4></div><br>';
         $js = true;
     }elseif($to_send>1){
-        echo '<br><div id="messInfo"><h4 class="alert_warning" id="SendIt">'.tr("SUBSCRIBERS_DIDNT_RECEIVE", $to_send).'<h4></div><br>';
+        echo '<br><div id="messInfo"><h4 class="alert_warning pointer" id="SendIt">'.tr("SUBSCRIBERS_DIDNT_RECEIVE", $to_send).'<h4></div><br>';
         $js = true;
     }
     if($js){ ?>
         <script type="text/javascript">
             $("#SendIt").click(function(){
                 $('#msg').show();
+                $('#messInfo').hide('slow');
                 $(function(){
+                    var begin   = 0;
+                    var sn      = <?php echo (int)$to_send;?>;
                     var step    = 'send';
                     var pct     = 0;
-                    var list_id = <?php echo intval($list_id);?>;
+                    var list_id = <?php echo (int)$list_id;?>;
                     var token   = '<?php echo $token;?>';
-                    var msg_id  = <?php echo $msg_id;?>;
+                    var msg_id  = <?php echo (int)$msg_id;?>;
                     var tts     = 0;
                     function progresspump(){ 
                         $.ajax({
                             url:"send.php",
                             type: "GET",
                             dataType:"json",
-                            data:'list_id=' + list_id +'&token=' + token + '&step=' + step +'&msg_id=' + msg_id,
+                            data:'list_id=' + list_id +'&token=' + token + '&step=' + step +'&msg_id=' + msg_id + '&begin=' + begin + '&sn=' + sn,
                             success:function(rj){
                                 begin = rj.begin;
                                 sn    = rj.sn;
                                 step  = rj.step;
                                 pct   = (rj.pct!=''?rj.pct:0);
                                 msg_id= rj.msg_id;
-                                tts   = (rj.TTS!=''?rj.TTS:0);
+                                tts   = (typeof rj.TTS!='undefined'?rj.TTS:0);
                                 $("#pct").css('width',pct+'%');
                                 $("#done").html(pct+'%'+'(Execution time : '+tts+' ms)');
                                 if(pct > 99.999) {
@@ -94,7 +87,7 @@ if (!empty($msg_id) && empty($action)) {
                                 }
                             }
                         });
-                        setTimeout(progresspump,10000);
+                        setTimeout(progresspump,5000); // 10000
                     }progresspump();});
             });
         </script>
@@ -115,7 +108,6 @@ if (!empty($msg_id) && $action == "delete") {
     }
 }
 echo "</div></article>";
-
 
 
 

@@ -17,8 +17,13 @@ if(isset($_POST['NEWTASK'])&&$_POST['NEWTASK']=='SCHEDULE_NEW_TASK'&&$list_id==$
                         </tr> 
                         <tr>
                             <td width="20%" valign="top">
-                                <select name="mins" id="mins">
-                                    <?php for($min=0;$min<60;$min++){echo "<option value=\"$min\">$min</option>";} ?>
+                                <select name="days" id="days">
+                                    <?php for($days=1;$days<32;$days++){echo "<option value=\"$days\">$days</option>";} ?>
+                                </select>
+                            </td>
+                            <td width="20%" valign="top">
+                                <select name="months" id="months">
+                                    <?php echo tr("SCHEDULE_MONTHS_OPTION");?>
                                 </select>
                             </td>
                             <td width="20%" valign="top">
@@ -27,13 +32,8 @@ if(isset($_POST['NEWTASK'])&&$_POST['NEWTASK']=='SCHEDULE_NEW_TASK'&&$list_id==$
                                 </select>
                             </td>
                             <td width="20%" valign="top">
-                                <select name="days" id="days">
-                                    <?php for($days=1;$days<32;$days++){echo "<option value=\"$days\">$days</option>";} ?>
-                                </select>
-                            </td>
-                            <td width="20%" valign="top">
-                                <select name="months" id="months">
-                                    <?php echo tr("SCHEDULE_MONTHS_OPTION");?>
+                                <select name="mins" id="mins">
+                                    <?php for($min=0;$min<60;$min++){echo "<option value=\"$min\">$min</option>";} ?>
                                 </select>
                             </td>
                         </tr>

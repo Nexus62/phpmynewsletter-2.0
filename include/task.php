@@ -47,9 +47,11 @@ if(count($detail_task)==0){
     // on va mettre le message de la table sauvegarde dans la table archives :
     */
     $date = date("Y-m-d H:i:s");
-    $cnx->query('INSERT INTO '.$row_config_globale['table_archives'].' (id,date,type,subject,message,list_id)
+    /*$cnx->query('INSERT INTO '.$row_config_globale['table_archives'].' (id,date,type,subject,message,list_id)
                     SELECT "'.$detail_task[0]['msg_id'].'","'.$date.'",type,mail_subject,mail_body,list_id FROM '.$row_config_globale['table_crontab'].'
-                        WHERE list_id = "'.$detail_task[0]['list_id'].'" AND job_id = "'.$task_id.'"');
+                        WHERE list_id = "'.$detail_task[0]['list_id'].'" AND job_id = "'.$task_id.'"');*/
+    $cnx->query('UPDATE '.$row_config_globale['table_archives'].' SET date="'.$date.'"
+                    WHERE list_id = "'.$detail_task[0]['list_id'].'" AND id = "'.$detail_task[0]['msg_id'].'"');
     $daylog = @fopen(DOCROOT.'/logs/daylog-' . date("Y-m-d") . '.txt', 'a+');
     $daylogmsg=date("d M Y"). " : message sauvegardé sous Numéro d'envoi : ".$detail_task[0]['msg_id']."\n";
     fwrite($daylog, $daylogmsg, strlen($daylogmsg));
@@ -193,7 +195,7 @@ if(count($detail_task)==0){
                     color='#D4D4D4' width='90%' size='1'>"
                 . tr("UNSUBSCRIBE_LINK", "<a href='" . $row_config_globale['base_url'] . $row_config_globale['path'] . "subscription.php?i=" . $detail_task[0]['msg_id'] . "&list_id=" 
                 . $detail_task[0]['list_id'] . "&op=leave&email_addr=" . $addr[$i]['email'] . "&h=" . $addr[$i]['hash'] . "' style='' target='_blank'>") 
-                ."<br /><a href='https://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
+                ."<br /><a href='http://www.phpmynewsletter.com/' style='' target='_blank'>Phpmynewsletter 2.0</a></div></body></html>";
             } else {
                 $body .= tr("READ_ON_LINE", "<a href='".$row_config_globale['base_url'].$row_config_globale['path']."online.php?i=" . $detail_task[0]['msg_id'] 
                 . "&list_id=".$detail_task[0]['list_id']."&email_addr=".$addr[$i]['email']."&h=".$addr[$i]['hash']."'>")."<br />";
@@ -244,7 +246,7 @@ if(count($detail_task)==0){
                 fwrite($handler, $errstr, strlen($errstr));
             }
             $last_id_send = $addr[$i]['id'];
-            sleep(1);
+            msleep(1.5);
         }
         $end = microtime(true);
         $tts = substr(($end - $start),0,5);

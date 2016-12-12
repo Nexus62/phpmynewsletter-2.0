@@ -80,12 +80,12 @@ switch($op){
                         selector : 'textarea#redac',
                         plugins : [
                             'fullscreen fullpage visualblocks, preview searchreplace print insertdatetime hr',
-                            'charmap colorpicker anchor code link image paste pagebreak table contextmenu',
+                            'charmap  anchor code link image paste pagebreak table contextmenu',
                             'filemanager table code media autoresize textcolor emoticons'
                         ],
-                        /*toolbar1 : 'insertfile undo redo | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+                        /*toolbar1 : 'insertfile undo redo | bold italic | forecolor colorpicker backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
                         toolbar2 : 'styleselect | fontselect fontsizeselect | emoticons | link image | filemanager | template',*/
-                        toolbar1 : 'newdocument,print,|,bold,italic,underline,|,strikethrough,superscript,subscript,|,forecolor,colorpicker,backcolor,|,bullist,numlist,outdent,indent,|,visualchars,visualblocks,|,charmap,|,hr,',
+                        toolbar1 : 'newdocument,print,|,bold,italic,underline,|,strikethrough,superscript,subscript,|,forecolor,backcolor,|,bullist,numlist,outdent,indent,|,visualchars,visualblocks,|,charmap,|,hr,',
                         toolbar2 : 'table,|,cut,copy,paste,searchreplace,|,blockquote,|,undo,redo,|,link,unlink,anchor,|,image,emoticons,media,|,inserttime,|,preview,fullscreen,code,',
                         toolbar3 : 'styleselect,|,formatselect,|,fontselect,|,fontsizeselect,',
                         style_formats: [
@@ -113,7 +113,7 @@ switch($op){
                         convert_urls : true,
                         custom_undo_redo_levels : 20,
                         doctype : '<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">',
-                        entity_encoding : 'raw',
+                        entity_encoding : 'named',
                         external_filemanager_path:'/".$row_config_globale['path']."js/tinymce/plugins/filemanager/',
                         external_plugins: { 'filemanager' : '/".$row_config_globale['path']."js/tinymce/plugins/filemanager/plugin.min.js'},
                         extended_valid_elements: 'pre[*],style[*]',
@@ -302,6 +302,10 @@ switch($op){
         echo '<div class="archmsg">';
         if($error==""){
             echo "<div align='center'><h4 class='alert_success'>".tr("PREVIEW_SEND_OK").".</h4>";
+            if(isset($code_mailtester) && $code_mailtester!='') {
+                echo "<h4 class='advt alert_success' align='center'><a href='https://www.mail-tester.com/" . $code_mailtester . "' target='_blank'>" 
+                    . tr("CHECK_SPAM_SCORE_MAIL_TESTER")."</a></h4>";
+            } 
             echo "<h4 class='advt alert_info' align='center'>".tr("PREVIEW_OK")." ?<br>"
                 . tr("CLICK_TO_SEND", tr("COMPOSE_SEND")).", ".tr("COMPOSE_ELSE_BACK")."</h4></div>";
         } else {
