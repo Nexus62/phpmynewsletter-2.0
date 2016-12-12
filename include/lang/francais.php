@@ -12,6 +12,20 @@ $lang_array=array(
     "DELETE"=>"Supprimer",
     "FOUND"=>"Trouvé",
     "NOT_FOUND"=>"Non trouvé",
+    "LIST"=>"Liste",
+    "CAMPAIGNS"=>"Campagnes",
+    "CLICKS"=>"Clics",
+    "OPEN_RATE"=>"Taux d'ouverture",
+    "CTR"=>"CTR",
+    "ACTR"=>"ACTR",
+    "ENVIRONMENT_ALL_LISTS"=>"Environnement (toutes listes confondues)",
+    "MAIL_CLIENT"=>"Clients mails",
+    "RESTORE"=>"Restaurer",
+    "IMPORT_IN_PROGRESS"=>"Import en cours, merci de patienter...",
+    "KNOWN_USERS"=>"adresses dans la base",
+    "DESCRIPTION_ERROR"=>"Libellé erreur / motif",
+    "ERROR_ON_CAMPAIGN"=>"Erreur sur la campagne",
+    "MAIL_IN_ERROR"=>"Adresse en erreur",
     //ARCHIVE
     "ARCHIVE_TITLE"=>"Archives",
     "ARCHIVE_CHOOSE"=>"Sélectionnez une lettre d'info",
@@ -25,7 +39,7 @@ $lang_array=array(
     "ARCHIVE_DELETED"=>"Archive supprimée avec succes.",
     "ARCHIVE_NOT_FOUND"=>"Auncune archive trouvée",
     //INDEX
-    "PHPMYNEWSLETTER_TITLE"=>"phpMyNewsletter V.2.0",
+    "PHPMYNEWSLETTER_TITLE"=>"PhpMyNewsletter V.2.0",
     "EMAIL_ADDRESS"=>"Adresse électronique",
     "EMAIL_ADDRESS_NOT_VALID"=>"Cette adresse électronique n'est pas valide",
     "NEWSLETTER_SUBSCRIPTION"=>"Inscription",
@@ -109,6 +123,8 @@ $lang_array=array(
     "SUBSCRIBER_EXPORT_BTN"=>"Exporter",
     "SUBSCRIBER_TEMP_TITLE"=>"Abonnés en attente de confirmation",
     "SUBSCRIBER_TEMP_DELETED"=>"Adresse électronique supprimée avec succès",
+    "SUBSCRIBER_TEMP_FORCE_ADDED"=>"Adresse électronique ajoutée avec succès",
+    "ERROR_ADDING_SUBSCRIBER_TEMP"=>"Adresse électronique %s en erreur hard",
     "SUBSCRIBER_NOT_CONFIRMED"=>"Abonné(s) non validé(s)" ,
     "SUBSCRIBER_BULK_IMPORT"=>"Import en masse",
     "SUBSCRIBER_BOUNCERS"=>"Abonnés en erreur",
@@ -118,8 +134,12 @@ $lang_array=array(
     "SUBSCRIBER_ERROR_MANAGE_TITLE"=>"Gestion des adresses mails (abonnés) en erreur",
     "SUBSCRIBER_NO_ERRORS"=>"Pas d'adresse(s) e-mail incidentée(s) à traiter",
     "SUBSCRIBER_WITH_MAIL_DELETED"=>"Adresse mail dans la liste des mails supprimés / désabonnés / en erreur !",
+    "SUBSCRIBER_DELETE_BY_ADMIN"=>"supprimé par administrateur",
     "EMAIL_ON_DELETED_LIST"=>"%s : Cette adresse mail est présente sur la liste des mails supprimés !",
     "SUBSCRIPTION_HTML_CODE"=>"Code HTML de souscription",
+    "MAIL_RESTORED"=>"Adresse e-mail restaurée",
+    "MAIL_ERROR_TO_RESTORE"=>"Erreur en restaurant cet e-mail",
+    "FORCE_CONFIRMATION"=>"Forcer la confirmation",
     //COMPOSE 
     "COMPOSE_NEW"=>"Rédiger un nouveau message",
     "COMPOSE_SUBJECT"=>"Sujet",
@@ -154,6 +174,7 @@ $lang_array=array(
     "RFC_2822"=>"(Attention : selon la norme <a href='http://www.faqs.org/rfcs/rfc2822.htm' target='_blank'>RFC 2822</a> section 2.1.1, il convient de ne pas dépasser 78 caractères !)",
     "CLICK_TO_COMPOSE_HTML"=>"Cliquez ici pour insérer un message composé au format html",
     "CLICK_TO_COMPOSE_WITH_EDITOR"=>"Cliquez ici pour composer un message avec l'éditeur",
+    "CHECK_SPAM_SCORE_MAIL_TESTER"=>"Vérifier mon score de SPAM sur mail-tester.com",
     //GLOBAL CONFIG
     "GCONFIG_TITLE"=>"Configuration globale",
     "GCONFIG_DB_TITLE"=> "Réglages de la base de données",
@@ -182,6 +203,7 @@ $lang_array=array(
     "GCONFIG_MESSAGE_HANDLING_TITLE"=>"Gestion des envois",
     "GCONFIG_MESSAGE_ADMIN_NAME"=>"Nom de l'expéditeur par défaut (Champs <i>From:</i>)",
     "GCONFIG_MESSAGE_ADMIN_MAIL"=>"Adresse électronique de l'expéditeur par défaut",
+    "GCONFIG_MESSAGE_CODE_MAILTESTER"=>"Code 'mail-tester.com', exemple : 'web-jeJbQ' (la partie avant '@mail-tester.com')",
     "GCONFIG_MESSAGE_CHARSET"=>"Encodage des caractères à utiliser",
     "GCONFIG_MESSAGE_NUM_LOOP"=>"Nombre de messages expédiés à chaque boucle d'envoi",
     "GCONFIG_MESSAGE_SEND_METHOD"=>"Méthode d'expédition",
@@ -220,7 +242,7 @@ $lang_array=array(
     "GCONFIG_HOST_MAIL"=>"Host serveur mail",
     "GCONFIG_PORT"=>"Port<br>Par défaut : 110",
     "GCONFIG_SERVICE"=>"Service : pop3 ou imap<br> Par défaut : pop3",
-    "GCONFIG_SERVICE_OPTION"=>"Option du service : none, tls, notls, ssl<br> Par défaut : notls",
+    "GCONFIG_SERVICE_OPTION"=>"Option du service : none, tls, notls, ssl, ssl/novalidate-cert. Par défaut : notls",
     "GCONFIG_TEST_BOUNCE"=>"Tester ces paramètres",
     // SMTP CONFIGURATION :
     "GCONFIG_SMTP_LB_TITLE"=>"Gestion Load Balancing SMTP",
@@ -322,6 +344,7 @@ $lang_array=array(
     "INSTALL_CREATE_DB_DOWN"=>"La création de la base de données a échoué",
     "QUERY"=>"Requête",
     "UPLOAD_DIRECTORY"=>"Répertoire d'upload",
+    "LOGS_DIRECTORY"=>"Répertoire des logs",
     "DKIM_DIRECTORY"=>"Répertoire des certificats DKIM",
     "BK_CRONTAB_DIRECTORY"=>"Répertoire de sauvegarde de la crontab",
     "ERROR_CREATE_UPLOAD_DIRECTORY"=>"Erreur lors de la création du répertoire d'upload", // Error while creating upload directory 
@@ -463,16 +486,17 @@ $lang_array=array(
     "SUSCRIBE"=>"souscrire",
     "CODE_TITLE"=>"Code HTML de souscription",
     // LISTS
-    "LIST_NUMBER"=>"N°",
+    "LIST_NUMBER"=>"Liste N°",
     "LIST_NAME"=>"Nom",
     "LIST_COUNT_SUSCRIBERS"=>"Abonnés",
     "LIST_SELECTED"=>"Liste sélectionnée",
     "CHOOSE_THIS_LIST"=>"Choisir cette liste",
     "DELETE_THIS_LIST"=>"Supprimer cette liste",
-    "LIST_LAST_CAMPAIGN"=>"Dernier envoi",
+    "LIST_LAST_CAMPAIGN"=>"Dernière campagne",
     "LIST_DUPLICATE"=>"Dupliquer cette liste",
     "LIST_MIX_TITLE"=>"MIXER",
     "LIST_MIX_DETAIL"=>"Mixer cette liste avec une autre liste",
+    "KEY_NUMBERS_ALL_LISTS"=>"Chiffres clé, toutes listes confondues",
     "WARNING_DELETE_LIST"=>"Supprimer toutes les informations relatives à cette liste (Cette action est irréversible)",
     // MAILQ
     "NO_MAIL_IN_PROCESS"=>"pas de mail en cours d'envoi",
@@ -482,17 +506,14 @@ $lang_array=array(
     "SCHEDULE_EXPLAIN"=>"<p>Vous allez planifier l'envoi de la campagne intitulée : <b>%s</b><br>
             Vous devez choisir une date, en précisant :
             <ul>
-                <li>les minutes, (00) par défaut</li>
-                <li>les heures, (00) par défaut</li>
                 <li>le jour du mois, (1er) par défaut</li>
                 <li>le mois, (janvier) par défaut</li>
+                <li>les heures, (00) par défaut</li>
+                <li>les minutes, (00) par défaut</li>
             </ul>
             Une fois l'envoi terminé, la tâche planifiée sera automatiquement supprimée.
             </p>",
-    "SCHEDULE_DATE_HEAD"=>"<th>Minute(s)</th>
-                            <th>Heure(s)</th>
-                            <th>Jour du mois</th> 
-                            <th>Mois</th>",
+    "SCHEDULE_DATE_HEAD"=>"<th>Jour du mois</th><th>Mois</th><th>Heure(s)</th><th>Minute(s)</th>",
     "SCHEDULE_MONTHS_OPTION"=>"<option value=1>Janvier</option>
                                     <option value=2>Février</option>
                                     <option value=3>Mars</option>
@@ -568,6 +589,7 @@ $lang_array=array(
                 <th>Envois</th>
                 <th>Lectures</th>
                 <th>Ouvertures</th>
+                <th>Clics</th>
                 <th>Taux d'ouverture</th>
                 <th>CTR</th>
                 <th>ACTR</th>
@@ -579,6 +601,7 @@ $lang_array=array(
     "TRACKING_VIEW_LOG_DAY"=>"Visualiser le fichier log de la journée du %s",
     "TRACKING_VIEW_LOG_SEND"=>"Visualiser le fichier log de l'envoi",
     "TRACKING_DETAILLED_CLICKED_LINKS"=>"Statistiques détaillées des liens cliqués",
+    "TRACKING_GOTO_LIST"=>"Accéder aux statistiques de la liste",
     "CLICKED_LINK_REPORT_ENVIRONMENT"=>"Navigateurs",
     "CLICKED_LINK_REPORT_OS"=>"Systèmes d'exploitation",
     "RESULTS"=>"Résultats",
@@ -609,7 +632,6 @@ $lang_array=array(
     /* SPAM */
     "CHECK_SPAM_SCORE"=>"Calculer le score spam"
     );
-
 
 
 

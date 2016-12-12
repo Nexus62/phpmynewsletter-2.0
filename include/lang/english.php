@@ -12,6 +12,20 @@ $lang_array=array (
     "DELETE"=>"Delete",
     "FOUND"=>"Found",
     "NOT_FOUND"=>"Not found",
+    "LIST"=>"List",
+    "CAMPAIGNS"=>"Campaigns",
+    "CLICKS"=>"Clicks",
+    "OPEN_RATE"=>"Open-rate",
+    "CTR"=>"CTR",
+    "ACTR"=>"ACTR",
+    "ENVIRONMENT_ALL_LISTS"=>"Environment (all lists combined)",
+    "MAIL_CLIENT"=>"Mail clients",
+    "RESTORE"=>"Restore",
+    "IMPORT_IN_PROGRESS"=>"Import in progress, please wait...",
+    "KNOWN_USERS"=>"known users in database",
+    "DESCRIPTION_ERROR"=>"Description of error",
+    "ERROR_ON_CAMPAIGN"=>"Error on campaign",
+    "MAIL_IN_ERROR"=>"Mail with error",
     // ARCHIVE
     "ARCHIVE_TITLE"=>"Archive",
     "ARCHIVE_CHOOSE"=>"Select an information letter",
@@ -25,7 +39,7 @@ $lang_array=array (
     "ARCHIVE_DELETED"=>"Archive deleted successfully.",
     "ARCHIVE_NOT_FOUND"=>"since No archive found",
     //INDEX
-    "PHPMYNEWSLETTER_TITLE"=>"phpMyNewsletter V.2.0",
+    "PHPMYNEWSLETTER_TITLE"=>"PhpMyNewsletter V.2.0",
     "EMAIL_ADDRESS"=>"Email",
     "EMAIL_ADDRESS_NOT_VALID"=>"This email address is invalid",
     "NEWSLETTER_SUBSCRIPTION"=>"Registration",
@@ -109,6 +123,8 @@ $lang_array=array (
     "SUBSCRIBER_EXPORT_BTN"=>"Export",
     "SUBSCRIBER_TEMP_TITLE"=>"Subscribers pending confirmation",
     "SUBSCRIBER_TEMP_DELETED"=>"Email successfully removed",
+    "SUBSCRIBER_TEMP_FORCE_ADDED"=>"Email successfully added",
+    "ERROR_ADDING_SUBSCRIBER_TEMP"=>"Email %s with hard error",
     "SUBSCRIBER_NOT_CONFIRMED"=>"Subscriber(s) not validated(s)",
     "SUBSCRIBER_BULK_IMPORT"=>"Import mass",
     "SUBSCRIBER_BOUNCERS"=>"Following error",
@@ -118,8 +134,12 @@ $lang_array=array (
     "SUBSCRIBER_ERROR_MANAGE_TITLE"=>"Managing wrong mail addresses",
     "SUBSCRIBER_NO_ERRORS"=>"No wrong mail addresses",
     "SUBSCRIBER_WITH_MAIL_DELETED"=>"mail address in the list of deleted mails / unsubscribed / or error !",
+    "SUBSCRIBER_DELETE_BY_ADMIN"=>"delete by admin",
     "EMAIL_ON_DELETED_LIST"=>"%s : this email address is present on the list of deleted mails !",
     "SUBSCRIPTION_HTML_CODE"=>"HTML Code Subscription",
+    "MAIL_RESTORED"=>"Mail correctly restored",
+    "MAIL_ERROR_TO_RESTORE"=>"Error while restoring this mail",
+    "FORCE_CONFIRMATION"=>"Force confirmation",
     //COMPOSE
     "COMPOSE_NEW"=>"Compose New Message",
     "COMPOSE_SUBJECT"=>"Subject",
@@ -154,6 +174,7 @@ $lang_array=array (
     "RFC_2822"=>"(note: according to standard <a href='http://www.faqs.org/rfcs/rfc2822.htm' target='_blank'>RFC 2822</a> section 2.1.1, it shouldn't exceed 78 characters !)",
     "CLICK_TO_COMPOSE_HTML"=>"Click here to insert a message composed in html",
     "CLICK_TO_COMPOSE_WITH_EDITOR"=>"Click here to compose a message with the publisher",
+    "CHECK_SPAM_SCORE_MAIL_TESTER"=>"My SPAM score on mail-tester.com",
     // GLOBAL CONFIG
     "GCONFIG_TITLE"=>"Global Configuration",
     "GCONFIG_DB_TITLE"=>"Database Settings",
@@ -182,6 +203,7 @@ $lang_array=array (
     "GCONFIG_MESSAGE_HANDLING_TITLE"=>"shipments management",
     "GCONFIG_MESSAGE_ADMIN_NAME"=>"Name of the default sender (Field <i>From:</i>)",
     "GCONFIG_MESSAGE_ADMIN_MAIL"=>"Email the default sender",
+    "GCONFIG_MESSAGE_CODE_MAILTESTER"=>"Code 'mail-tester.com', example : 'web-jeJbQ' (first part before '@mail-tester.com')",
     "GCONFIG_MESSAGE_CHARSET"=>"Character encoding to use,",
     "GCONFIG_MESSAGE_NUM_LOOP"=>"Number of messages sent to each send loop",
     "GCONFIG_MESSAGE_SEND_METHOD"=>"Shipping Method",
@@ -220,7 +242,7 @@ $lang_array=array (
     "GCONFIG_HOST_MAIL"=>"Host Mail Server",
     "GCONFIG_PORT"=>"<br>Port Default: 110",
     "GCONFIG_SERVICE"=>"Service: pop3 or imap <br>Default: pop3",
-    "GCONFIG_SERVICE_OPTION"=>"Service Option: none, tls, notls, <br>ssl Default: notls",
+    "GCONFIG_SERVICE_OPTION"=>"Service Option: none, tls, notls, ssl, ssl/novalidate-cert. Default: notls",
     "GCONFIG_TEST_BOUNCE"=>"Test those settings",
     // SMTP CONFIGURATION:
     "GCONFIG_SMTP_LB_TITLE"=>"Load Balancing Management SMTP",
@@ -322,6 +344,7 @@ $lang_array=array (
     "INSTALL_CREATE_DB_DOWN"=>"The creation of the database has failed,",
     "QUERY"=>"Request",
     "UPLOAD_DIRECTORY"=>"upload directory",
+    "LOGS_DIRECTORY"=>"logs directory",
     "DKIM_DIRECTORY"=>"Directory DKIM certificates",
     "BK_CRONTAB_DIRECTORY"=>"Backup directory crontab",
     "ERROR_CREATE_UPLOAD_DIRECTORY"=>"Error creating the upload directory",
@@ -462,16 +485,17 @@ $lang_array=array (
     "SUSCRIBE"=>"subscribe",
     "CODE_TITLE"=>"HTML Code Subscription",
     // LISTS
-    "LIST_NUMBER"=>"No.",
+    "LIST_NUMBER"=>"List N°.",
     "LIST_NAME"=>"Name",
     "LIST_COUNT_SUSCRIBERS"=>"Subscribers",
     "LIST_SELECTED"=>"Selected List",
     "CHOOSE_THIS_LIST"=>"Select list",
     "DELETE_THIS_LIST"=>"Delete this list",
-    "LIST_LAST_CAMPAIGN"=>"Latest Post",
+    "LIST_LAST_CAMPAIGN"=>"Last campaign",
     "LIST_DUPLICATE"=>"Duplicate this list",
     "LIST_MIX_TITLE"=>"MIXER",
     "LIST_MIX_DETAIL"=>"Mixer this list with another list",
+    "KEY_NUMBERS_ALL_LISTS"=>"Key numbers, all lists combined",
     "WARNING_DELETE_LIST"=>"Delete all information relating to this list (This action is irreversible)",
     // Mailq
     "NO_MAIL_IN_PROCESS"=>"no email being sent",
@@ -481,17 +505,14 @@ $lang_array=array (
     "SCHEDULE_EXPLAIN"=>"<p>You will plan the sending of the campaign entitled: <b>%s</b>
                 You must select a date, stating:
                 <ul>
-                    <li>the minutes (00) default</li>
-                    <li>the hours, (00) default</li>
                     <li>the day of the month (1) by default</li>
                     <li>the month (January) Default</li>
+                    <li>the hours, (00) default</li>
+                    <li>the minutes (00) default</li>
                 </ul>
                 Once the sending finished, the scheduled task will be automatically removed.
                 </p>",
-    "SCHEDULE_DATE_HEAD"=>"<th>Minute (s)</th>
-                                <th>time (s)</th>
-                                <th>Day of the month</th>
-                                <th>Month</th>",
+    "SCHEDULE_DATE_HEAD"=>"<th>Day of the month</th><th>Month</th><th>time (s)</th><th>Minute (s)</th>",
     "SCHEDULE_MONTHS_OPTION"=>"<option value=1>January</option>
                                         <option value =2>February</option>
                                         <option value=3>March</option>
@@ -527,7 +548,7 @@ $lang_array=array (
     "SCHEDULE_CAMPAIGN_TITLE"=>"Campaign Name",
     "SCHEDULE_CAMPAIGN_ID"=>"Name of the campaign",
     "SCHEDULE_CAMPAIGN_DATE_DONE"=>"Execution date",
-    "SCHEDULE_CAMPAIGN_SENDED"=>"Number of mails sent,",
+    "SCHEDULE_CAMPAIGN_SENDED"=>"Number of mails sent",
     "SCHEDULE_CAMPAIGN_ERROR"=>"Number of mails error",
     "SCHEDULE_START_PROCESS"=>"Sending started",
     "SCHEDULE_END_PROCESS"=>"Sending completed",
@@ -550,6 +571,7 @@ $lang_array=array (
     "PJ_TO_DELETE"=>"delete this attachment",
     "IMAP_OK"=>"Connection successful",
     "IMAP_DOWN"=>"No connection",
+    // TRACKING
     "TRACKING_TITLE"=>"Tracking",
     "TRACKING_NO_DATA_AVAILABLE"=>"No statistics available, awaiting campaigns",
     "TRACKING_STATS_GRAPHICS_REPORT"=>"Graphs reporting by campaign ID",
@@ -566,6 +588,7 @@ $lang_array=array (
                 <th>Send</th>
                 <th>Read</th>
                 <th>Opened</th>
+                <th>Clicks</th>
                 <th>Open-Rate</th>
                 <th>CTR</th>
                 <th>ACTR</th>
@@ -577,6 +600,7 @@ $lang_array=array (
     "TRACKING_VIEW_LOG_DAY"=>"View day log for %s",
     "TRACKING_VIEW_LOG_SEND"=>"View send log",
     "TRACKING_DETAILLED_CLICKED_LINKS"=>"Detailled stats for clicked links",
+    "TRACKING_GOTO_LIST"=>"Go to list statistics",
     "CLICKED_LINK_REPORT_ENVIRONMENT"=>"Browsers",
     "CLICKED_LINK_REPORT_OS"=>"Operating Systems",
     "RESULTS"=>"Results",
