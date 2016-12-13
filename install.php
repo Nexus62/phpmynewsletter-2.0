@@ -544,6 +544,7 @@ if (empty($langfile)) {
                                 `table_upload`      VARCHAR(255) NOT NULL DEFAULT "",
                                 `table_crontab`     VARCHAR(255) NOT NULL DEFAULT "",
                                 `table_email_deleted` VARCHAR(255) NOT NULL DEFAULT "",
+                                `table_smtp` VARCHAR(255) NOT NULL DEFAULT "",
                                 `alert_sub`         ENUM("0","1") NOT NULL DEFAULT "1",
                                 `active_tracking`   ENUM("0","1") NOT NULL DEFAULT "1"
                                 ) ENGINE='.$storage_engine.' DEFAULT CHARSET=utf8;';
@@ -761,7 +762,8 @@ if (empty($langfile)) {
                         'utf-8', '" . $table_prefix . "track', '" . $table_prefix . "send',
                         '" . $table_prefix . "autosave', '" . $table_prefix . "send_suivi', 
                         '" . $table_prefix . "track_links', '" . $table_prefix . "upload',
-                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted','$alert_sub')";
+                        '" . $table_prefix . "crontab','" . $table_prefix . "email_deleted',
+                        '" . $table_prefix . "smtp','$alert_sub','1')";
             if($cnx->Sql($sql)){
                 echo '<h4 class="alert_success">' . tr("INSTALL_SAVE_CONFIG") . ' ' .tr("DONE").'</h4>';
             }else{
