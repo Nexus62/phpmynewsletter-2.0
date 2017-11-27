@@ -403,7 +403,7 @@ if (empty($langfile)) {
 									KEY `type` (`type`),
 									KEY `categorie` (`categorie`),
 									KEY `campaign_id` (`campaign_id`)
-								) ENGINE='.$storage_engine.' DEFAULT CHARSET=utf8  AUTO_INCREMENT=1;'';
+								) ENGINE='.$storage_engine.' DEFAULT CHARSET=utf8  AUTO_INCREMENT=1;';
 								if($cnx->Sql($sql)){
 									echo '<h4 class="alert alert-success">'.tr("INSTALL_SAVE_CREATE_TABLE", $table_prefix . "email") .' '.tr("DONE").'</h4>';
 								}else{
@@ -430,7 +430,7 @@ if (empty($langfile)) {
 									KEY `type` (`type`),
 									KEY `categorie` (`categorie`),
 									KEY `campaign_id` (`campaign_id`)
-								) ENGINE='.$storage_engine.' DEFAULT CHARSET=utf8  AUTO_INCREMENT=1;'';
+								) ENGINE='.$storage_engine.' DEFAULT CHARSET=utf8  AUTO_INCREMENT=1;';
 								if($cnx->Sql($sql)){
 									echo '<h4 class="alert alert-success">'.tr("INSTALL_SAVE_CREATE_TABLE", $table_prefix . "email_deleted") .' '.tr("DONE").'</h4>';
 								}else{
