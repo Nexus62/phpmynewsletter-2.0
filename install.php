@@ -268,7 +268,7 @@ if (empty($langfile)) {
 									PRIMARY KEY (`id`),
 									KEY `list_id` (`list_id`),
 									KEY `sender_email` (`sender_email`)
-								) ENGINE='.$storage_engine.' DEFAULT CHARSET=utf8   AUTO_INCREMENT=1;'';
+								) ENGINE='.$storage_engine.' DEFAULT CHARSET=utf8   AUTO_INCREMENT=1;';
 								if($cnx->Sql($sql)){
 									echo '<h4 class="alert alert-success">'.tr("INSTALL_SAVE_CREATE_TABLE", $table_prefix . "archives") .' '.tr("DONE").'</h4>';
 								}else{
